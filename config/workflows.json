@@ -32,7 +32,7 @@
           "id": "infrastructure_map",
           "name": "Infrastructure Mapping",
           "description": "Map any associated domains, IPs, and services",
-          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon", "dns_native", "whois_native", "crt_sh", "web_scraper", "wayback", "ip_api", "virustotal"],
+          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon", "dns_native", "whois_native", "crt_sh", "web_scraper", "wayback", "ip_api", "virustotal", "hunter"],
           "input_types": ["domain", "ip"],
           "depends_on": ["seed_expansion"],
           "timeout": 600000,
@@ -97,7 +97,7 @@
         {
           "id": "personnel_harvest",
           "name": "Personnel Harvesting",
-          "connectors": ["theharvester", "photon"],
+          "connectors": ["theharvester", "photon", "hunter"],
           "input_types": ["domain"],
           "depends_on": [],
           "timeout": 300000

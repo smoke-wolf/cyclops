@@ -351,6 +351,19 @@
       "parallel": true,
       "enabled": true
     },
+    "hunter": {
+      "name": "Hunter",
+      "type": "email_finder",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain", "email"],
+      "outputs": ["email", "person", "organization"],
+      "timeout": 15000,
+      "priority": 1,
+      "parallel": true,
+      "api_key_env": "HUNTER_API_KEY",
+      "enabled": true
+    },
     "virustotal": {
       "name": "VirusTotal",
       "type": "threat_intelligence",
