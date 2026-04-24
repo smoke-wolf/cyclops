@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYCLOPS</title>
+<style>
+:root {
+    --bg-0: #08090d; --bg-1: #0f1117; --bg-2: #181a22; --bg-3: #1e2130;
+    --text-0: #f0f3f8; --text-1: #a0a8b8; --text-2: #6b7280;
+    --accent: #e74c3c; --accent-dim: rgba(231,76,60,0.12); --accent-bright: #ff6b5a;
+    --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+    --red: #ef4444; --blue: #3b82f6; --purple: #a78bfa;
+    --border: rgba(255,255,255,0.06); --radius: 6px;
+    --mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-0); color: var(--text-0); font-family: var(--mono); font-size: 13px; line-height: 1.6; }
+.app { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 48px 1fr; height: 100vh; }
+
+/* Header */
+.header { grid-column: 1 / -1; background: var(--bg-1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 16px; }
+.logo { font-size: 15px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.logo-sub { font-size: 10px; color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase; }
+.header-status { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.warn { background: var(--amber); }
+.status-dot.err { background: var(--red); }
+
+/* Sidebar */
+.sidebar { background: var(--bg-1); border-right: 1px solid var(--border); padding: 16px 0; overflow-y: auto; }
+.nav-item { display: block; padding: 8px 20px; color: var(--text-1); text-decoration: none; font-size: 12px; letter-spacing: 0.04em; border-left: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+.nav-item:hover { background: var(--bg-2); color: var(--text-0); }
+.nav-item.active { border-left-color: var(--accent); color: var(--text-0); background: var(--accent-dim); }
+.nav-section { padding: 16px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2); }
+
+/* Main */
+.main { padding: 24px; overflow-y: auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Cards & Stats */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2); margin-top: 4px; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 8px 12px; background: var(--bg-2); color: var(--text-2); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); font-weight: 500; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-1); font-size: 12px; }
+tr:hover td { background: var(--bg-1); }
+
+/* Badges */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); }
+.badge-red { background: rgba(239,68,68,0.12); color: var(--red); }
+.badge-blue { background: rgba(59,130,246,0.12); color: var(--blue); }
+.badge-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); margin-bottom: 4px; display: block; }
+input, select, textarea { width: 100%; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-0); padding: 8px 12px; font-family: var(--mono); font-size: 13px; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 80px; }
+.btn { display: inline-block; padding: 8px 20px; border-radius: var(--radius); font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-bright); }
+.btn-ghost { background: transparent; color: var(--text-1); }
+.btn-ghost:hover { background: var(--bg-2); color: var(--text-0); }
+
+/* Known input row */
+.known-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.known-row select { width: 140px; }
+.known-row input { flex: 1; }
+.known-remove { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; padding: 4px 8px; }
+
+/* Event log */
+.event-log { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; max-height: 300px; overflow-y: auto; font-size: 11px; }
+.event-line { padding: 2px 0; color: var(--text-1); border-bottom: 1px solid rgba(255,255,255,0.02); }
+.event-line .ts { color: var(--text-2); }
+.event-line .type { color: var(--accent); }
+
+h2 { font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-1); margin-bottom: 16px; }
+h3 { font-size: 12px; font-weight: 500; color: var(--text-0); margin: 16px 0 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <span class="logo">CYCLOPS</span>
+        <span class="logo-sub">OSINT Pipeline</span>
+        <div class="header-status">
+            <span><span class="status-dot ok" id="ws-status"></span><span id="ws-label">connecting</span></span>
+            <span id="connector-count" style="color:var(--text-2)">0 connectors</span>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="nav-section">Operations</div>
+        <a class="nav-item active" data-page="investigate">New Investigation</a>
+        <a class="nav-item" data-page="investigations">Investigations</a>
+        <div class="nav-section">System</div>
+        <a class="nav-item" data-page="connectors">Connectors</a>
+        <a class="nav-item" data-page="events">Event Log</a>
+    </div>
+
+    <div class="main">
+        <!-- NEW INVESTIGATION -->
+        <div class="page active" id="page-investigate">
+            <h2>New Investigation</h2>
+            <div class="form-group">
+                <label class="form-label">Investigation Name</label>
+                <input type="text" id="inv-name" placeholder="Target investigation name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Workflow</label>
+                <select id="inv-workflow">
+                    <option value="person_full">Full Person Investigation</option>
+                    <option value="domain_recon">Domain Reconnaissance</option>
+                    <option value="username_trace">Username Trace</option>
+                    <option value="quick_recon">Quick Recon (60s)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Known Inputs</label>
+                <div id="knowns-container">
+                    <div class="known-row">
+                        <select><option value="username">username</option><option value="email">email</option><option value="domain">domain</option><option value="ip">ip</option><option value="phone">phone</option><option value="name">name</option><option value="url">url</option></select>
+                        <input type="text" placeholder="Value">
+                        <button class="known-remove" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                </div>
+                <button class="btn btn-ghost" onclick="addKnownRow()">+ Add Known</button>
+            </div>
+            <button class="btn btn-primary" onclick="launchInvestigation()">Launch Investigation</button>
+            <div id="inv-result" style="margin-top:16px"></div>
+        </div>
+
+        <!-- INVESTIGATIONS LIST -->
+        <div class="page" id="page-investigations">
+            <h2>Investigations</h2>
+            <table>
+                <thead><tr><th>ID</th><th>Name</th><th>Workflow</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+                <tbody id="inv-table"></tbody>
+            </table>
+        </div>
+
+        <!-- CONNECTORS -->
+        <div class="page" id="page-connectors">
+            <h2>Connectors</h2>
+            <div class="stat-grid" id="conn-stats"></div>
+            <button class="btn btn-ghost" onclick="checkHealth()" style="margin-bottom:16px">Run Health Check</button>
+            <table>
+                <thead><tr><th>Name</th><th>Type</th><th>Accepts</th><th>Outputs</th><th>Status</th></tr></thead>
+                <tbody id="conn-table"></tbody>
+            </table>
+        </div>
+
+        <!-- EVENT LOG -->
+        <div class="page" id="page-events">
+            <h2>Live Event Stream</h2>
+            <div class="event-log" id="event-log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = '';
+let ws;
+
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        item.classList.add('active');
+        document.getElementById('page-' + item.dataset.page).classList.add('active');
+        if (item.dataset.page === 'investigations') loadInvestigations();
+        if (item.dataset.page === 'connectors') loadConnectors();
+    });
+});
+
+function addKnownRow() {
+    const container = document.getElementById('knowns-container');
+    const row = document.createElement('div');
+    row.className = 'known-row';
+    row.innerHTML = '<select><option value="username">username</option><option value="email">email</option><option value="domain">domain</option><option value="ip">ip</option><option value="phone">phone</option><option value="name">name</option><option value="url">url</option></select><input type="text" placeholder="Value"><button class="known-remove" onclick="this.parentElement.remove()">&times;</button>';
+    container.appendChild(row);
+}
+
+async function launchInvestigation() {
+    const name = document.getElementById('inv-name').value;
+    const workflow = document.getElementById('inv-workflow').value;
+    const rows = document.querySelectorAll('.known-row');
+    const knowns = [];
+    rows.forEach(row => {
+        const type = row.querySelector('select').value;
+        const value = row.querySelector('input').value.trim();
+        if (value) knowns.push({ type, value });
+    });
+    if (!name || !knowns.length) { alert('Name and at least one known required'); return; }
+
+    document.getElementById('inv-result').innerHTML = '<span class="badge badge-amber">RUNNING...</span>';
+    try {
+        const res = await fetch(API + '/api/investigate/async', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, workflow, knowns })
+        });
+        const data = await res.json();
+        document.getElementById('inv-result').innerHTML = `<span class="badge badge-green">LAUNCHED</span> ID: <code>${data.id}</code>`;
+    } catch (e) {
+        document.getElementById('inv-result').innerHTML = `<span class="badge badge-red">ERROR</span> ${e.message}`;
+    }
+}
+
+async function loadInvestigations() {
+    const res = await fetch(API + '/api/investigations');
+    const data = await res.json();
+    const tbody = document.getElementById('inv-table');
+    tbody.innerHTML = data.map(inv => `
+        <tr>
+            <td><code>${inv.id}</code></td>
+            <td>${inv.name}</td>
+            <td>${inv.workflow}</td>
+            <td><span class="badge badge-${inv.status === 'completed' ? 'green' : inv.status === 'running' ? 'amber' : inv.status === 'failed' ? 'red' : 'blue'}">${inv.status}</span></td>
+            <td>${inv.created_at}</td>
+            <td><a href="/api/investigation/${inv.id}/report?format=html" target="_blank" class="btn btn-ghost" style="padding:4px 8px;font-size:10px">Report</a></td>
+        </tr>
+    `).join('');
+}
+
+async function loadConnectors() {
+    const res = await fetch(API + '/api/connectors');
+    const data = await res.json();
+    document.getElementById('connector-count').textContent = data.length + ' connectors';
+    const tbody = document.getElementById('conn-table');
+    tbody.innerHTML = data.map(c => `
+        <tr>
+            <td>${c.name}</td>
+            <td>${c.type}</td>
+            <td>${c.accepts.map(a => '<span class="badge badge-blue">' + a + '</span>').join(' ')}</td>
+            <td>${c.outputs.map(o => '<span class="badge badge-purple">' + o + '</span>').join(' ')}</td>
+            <td><span class="badge badge-${c.healthy === true ? 'green' : c.healthy === false ? 'red' : 'amber'}">${c.healthy === true ? 'OK' : c.healthy === false ? 'DOWN' : 'UNCHECKED'}</span></td>
+        </tr>
+    `).join('');
+}
+
+async function checkHealth() {
+    const res = await fetch(API + '/api/connectors/health');
+    const data = await res.json();
+    document.getElementById('conn-stats').innerHTML = `
+        <div class="stat-card"><div class="stat-value">${data.summary.total}</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:var(--green)">${data.summary.healthy}</div><div class="stat-label">Healthy</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:var(--red)">${data.summary.unhealthy}</div><div class="stat-label">Unhealthy</div></div>
+    `;
+    loadConnectors();
+}
+
+// WebSocket
+function connectWs() {
+    ws = new WebSocket(`ws://${location.host}`);
+    ws.onopen = () => {
+        document.getElementById('ws-status').className = 'status-dot ok';
+        document.getElementById('ws-label').textContent = 'connected';
+    };
+    ws.onclose = () => {
+        document.getElementById('ws-status').className = 'status-dot err';
+        document.getElementById('ws-label').textContent = 'disconnected';
+        setTimeout(connectWs, 3000);
+    };
+    ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        const log = document.getElementById('event-log');
+        const line = document.createElement('div');
+        line.className = 'event-line';
+        const ts = new Date().toLocaleTimeString();
+        line.innerHTML = `<span class="ts">${ts}</span> <span class="type">${data.type}</span> ${data.connector || ''} ${data.message || ''}`;
+        log.prepend(line);
+        while (log.children.length > 500) log.lastChild.remove();
+    };
+}
+connectWs();
+loadConnectors();
+</script>
+</body>
+</html>

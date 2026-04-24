@@ -1,0 +1,129 @@
+{
+  "entity_types": {
+    "person": {
+      "fields": ["name", "username", "email", "phone", "photo_url", "bio"],
+      "link_weight": 1.0
+    },
+    "account": {
+      "fields": ["platform", "username", "url", "verified", "created_at", "bio", "followers", "following"],
+      "link_weight": 0.8
+    },
+    "email": {
+      "fields": ["address", "provider", "verified", "breached"],
+      "link_weight": 0.9
+    },
+    "domain": {
+      "fields": ["name", "registrar", "created_at", "expires_at", "nameservers"],
+      "link_weight": 0.7
+    },
+    "subdomain": {
+      "fields": ["name", "parent_domain", "ip", "cname"],
+      "link_weight": 0.5
+    },
+    "ip": {
+      "fields": ["address", "version", "asn", "org", "country", "city", "isp"],
+      "link_weight": 0.6
+    },
+    "port": {
+      "fields": ["number", "protocol", "service", "version", "banner"],
+      "link_weight": 0.3
+    },
+    "certificate": {
+      "fields": ["subject", "issuer", "san", "not_before", "not_after", "fingerprint"],
+      "link_weight": 0.6
+    },
+    "breach": {
+      "fields": ["name", "date", "source", "data_types", "records"],
+      "link_weight": 0.7
+    },
+    "credential": {
+      "fields": ["email", "password_hash", "plaintext", "source_breach"],
+      "link_weight": 0.9
+    },
+    "phone": {
+      "fields": ["number", "carrier", "line_type", "country", "location"],
+      "link_weight": 0.8
+    },
+    "url": {
+      "fields": ["url", "title", "status_code", "content_type"],
+      "link_weight": 0.4
+    },
+    "dns_record": {
+      "fields": ["type", "name", "value", "ttl"],
+      "link_weight": 0.4
+    }
+  },
+  "linking_rules": [
+    {
+      "name": "email_to_account",
+      "from": "email",
+      "to": "account",
+      "match_fields": ["address"],
+      "confidence": 0.95,
+      "bidirectional": true
+    },
+    {
+      "name": "username_to_account",
+      "from": "person",
+      "to": "account",
+      "match_fields": ["username"],
+      "confidence": 0.7,
+      "bidirectional": true
+    },
+    {
+      "name": "domain_to_subdomain",
+      "from": "domain",
+      "to": "subdomain",
+      "match_fields": ["name"],
+      "confidence": 1.0,
+      "bidirectional": false
+    },
+    {
+      "name": "subdomain_to_ip",
+      "from": "subdomain",
+      "to": "ip",
+      "match_fields": ["ip"],
+      "confidence": 0.9,
+      "bidirectional": true
+    },
+    {
+      "name": "email_to_breach",
+      "from": "email",
+      "to": "breach",
+      "match_fields": ["address"],
+      "confidence": 0.95,
+      "bidirectional": true
+    },
+    {
+      "name": "ip_to_port",
+      "from": "ip",
+      "to": "port",
+      "match_fields": ["address"],
+      "confidence": 1.0,
+      "bidirectional": false
+    },
+    {
+      "name": "domain_to_certificate",
+      "from": "domain",
+      "to": "certificate",
+      "match_fields": ["name"],
+      "confidence": 0.85,
+      "bidirectional": true
+    },
+    {
+      "name": "phone_to_person",
+      "from": "phone",
+      "to": "person",
+      "match_fields": ["number"],
+      "confidence": 0.8,
+      "bidirectional": true
+    }
+  ],
+  "scoring": {
+    "multi_source_bonus": 0.15,
+    "recency_decay_days": 180,
+    "recency_floor": 0.5,
+    "exact_match_boost": 0.2,
+    "fuzzy_match_threshold": 0.8
+  }
+}

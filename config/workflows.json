@@ -1,0 +1,208 @@
+{
+  "workflows": {
+    "person_full": {
+      "name": "Full Person Investigation",
+      "description": "Complete OSINT profile from any known person identifiers",
+      "phases": [
+        {
+          "id": "seed_expansion",
+          "name": "Seed Expansion",
+          "description": "Expand initial knowns into all available identifiers",
+          "connectors": ["sherlock", "holehe", "maigret", "whatsmyname", "socialscan", "ghunt"],
+          "input_types": ["username", "email", "phone", "name"],
+          "depends_on": [],
+          "timeout": 300000,
+          "success_criteria": {
+            "min_new_entities": 1
+          }
+        },
+        {
+          "id": "breach_check",
+          "name": "Breach & Credential Check",
+          "description": "Check expanded emails against breach databases",
+          "connectors": ["h8mail"],
+          "input_types": ["email"],
+          "depends_on": ["seed_expansion"],
+          "timeout": 120000,
+          "success_criteria": {
+            "min_new_entities": 0
+          }
+        },
+        {
+          "id": "infrastructure_map",
+          "name": "Infrastructure Mapping",
+          "description": "Map any associated domains, IPs, and services",
+          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon"],
+          "input_types": ["domain", "ip"],
+          "depends_on": ["seed_expansion"],
+          "timeout": 600000,
+          "success_criteria": {
+            "min_new_entities": 0
+          }
+        },
+        {
+          "id": "deep_profile",
+          "name": "Deep Profiling",
+          "description": "Crawl discovered URLs and profiles for additional intelligence",
+          "connectors": ["photon"],
+          "input_types": ["url", "domain"],
+          "depends_on": ["seed_expansion", "infrastructure_map"],
+          "timeout": 300000,
+          "success_criteria": {
+            "min_new_entities": 0
+          }
+        },
+        {
+          "id": "correlation",
+          "name": "Entity Correlation",
+          "description": "Link entities across sources, score confidence, build graph",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["seed_expansion", "breach_check", "infrastructure_map", "deep_profile"],
+          "timeout": 60000,
+          "internal": true
+        },
+        {
+          "id": "reporting",
+          "name": "Report Generation",
+          "description": "Generate unified intelligence report",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["correlation"],
+          "timeout": 30000,
+          "internal": true
+        }
+      ]
+    },
+    "domain_recon": {
+      "name": "Domain Reconnaissance",
+      "description": "Full infrastructure and personnel enumeration from a domain",
+      "phases": [
+        {
+          "id": "subdomain_enum",
+          "name": "Subdomain Enumeration",
+          "connectors": ["amass", "subfinder", "dnsrecon"],
+          "input_types": ["domain"],
+          "depends_on": [],
+          "timeout": 600000
+        },
+        {
+          "id": "service_scan",
+          "name": "Service Discovery",
+          "connectors": ["shodan", "censys", "nmap"],
+          "input_types": ["ip", "domain", "subdomain"],
+          "depends_on": ["subdomain_enum"],
+          "timeout": 600000
+        },
+        {
+          "id": "personnel_harvest",
+          "name": "Personnel Harvesting",
+          "connectors": ["theharvester", "photon"],
+          "input_types": ["domain"],
+          "depends_on": [],
+          "timeout": 300000
+        },
+        {
+          "id": "email_enum",
+          "name": "Email Account Enumeration",
+          "connectors": ["holehe", "h8mail"],
+          "input_types": ["email"],
+          "depends_on": ["personnel_harvest"],
+          "timeout": 180000
+        },
+        {
+          "id": "correlation",
+          "name": "Entity Correlation",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["subdomain_enum", "service_scan", "personnel_harvest", "email_enum"],
+          "internal": true
+        },
+        {
+          "id": "reporting",
+          "name": "Report Generation",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["correlation"],
+          "internal": true
+        }
+      ]
+    },
+    "username_trace": {
+      "name": "Username Trace",
+      "description": "Trace a username across platforms and extract linked identities",
+      "phases": [
+        {
+          "id": "platform_search",
+          "name": "Platform Search",
+          "connectors": ["sherlock", "maigret", "whatsmyname", "socialscan"],
+          "input_types": ["username"],
+          "depends_on": [],
+          "timeout": 300000
+        },
+        {
+          "id": "profile_scrape",
+          "name": "Profile Data Extraction",
+          "connectors": ["photon"],
+          "input_types": ["url"],
+          "depends_on": ["platform_search"],
+          "timeout": 300000
+        },
+        {
+          "id": "identity_pivot",
+          "name": "Identity Pivot",
+          "description": "Extract emails from profiles, run email-based tools",
+          "connectors": ["holehe", "ghunt", "h8mail"],
+          "input_types": ["email"],
+          "depends_on": ["profile_scrape"],
+          "timeout": 180000
+        },
+        {
+          "id": "correlation",
+          "name": "Entity Correlation",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["platform_search", "profile_scrape", "identity_pivot"],
+          "internal": true
+        },
+        {
+          "id": "reporting",
+          "name": "Report Generation",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["correlation"],
+          "internal": true
+        }
+      ]
+    },
+    "quick_recon": {
+      "name": "Quick Recon",
+      "description": "Fast surface-level sweep — 60 seconds max",
+      "phases": [
+        {
+          "id": "sweep",
+          "name": "Surface Sweep",
+          "connectors": ["sherlock", "holehe", "subfinder", "socialscan"],
+          "input_types": ["username", "email", "domain"],
+          "depends_on": [],
+          "timeout": 60000
+        },
+        {
+          "id": "reporting",
+          "name": "Report Generation",
+          "connectors": [],
+          "input_types": [],
+          "depends_on": ["sweep"],
+          "internal": true
+        }
+      ]
+    }
+  },
+  "defaults": {
+    "workflow": "person_full",
+    "report_format": "json",
+    "auto_pivot": true,
+    "dedup_threshold": 0.85,
+    "confidence_minimum": 0.3
+  }
+}
