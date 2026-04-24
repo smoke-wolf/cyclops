@@ -82,9 +82,12 @@ export class Correlator {
 
         const aliases = {
             address: ['email', 'ip_address', 'ip'],
-            name: ['domain', 'hostname', 'subdomain'],
-            username: ['handle', 'screen_name', 'user'],
-            number: ['phone', 'phone_number']
+            ip: ['address', 'ip_address'],
+            name: ['domain', 'hostname', 'subdomain', 'login', 'title'],
+            username: ['handle', 'screen_name', 'user', 'login'],
+            number: ['phone', 'phone_number'],
+            email: ['address'],
+            homepage: ['url', 'blog']
         };
 
         for (const [canonical, alts] of Object.entries(aliases)) {
@@ -94,6 +97,24 @@ export class Correlator {
                 }
             }
         }
+
+        if (field === 'username' && entity.type === 'repository' && entity.data.name) {
+            const parts = entity.data.name.split('/');
+            if (parts.length === 2) return parts[0];
+        }
+
+        if (field === 'name' && entity.type === 'url' && entity.data.url) {
+            try {
+                return new URL(entity.data.url.startsWith('http') ? entity.data.url : `https://${entity.data.url}`).hostname;
+            } catch {}
+        }
+
+        if (field === 'name' && entity.type === 'technology' && entity.data.url) {
+            try {
+                return new URL(entity.data.url.startsWith('http') ? entity.data.url : `https://${entity.data.url}`).hostname;
+            } catch {}
+        }
+
         return null;
     }
 

@@ -14,6 +14,12 @@ import { PhoneInfogaConnector } from './phoneinfoga.js';
 import { NmapConnector } from './nmap.js';
 import { DnsreconConnector } from './dnsrecon.js';
 import { PhotonConnector } from './photon.js';
+import { GitHubConnector } from './github.js';
+import { DnsNativeConnector } from './dns_native.js';
+import { WhoisNativeConnector } from './whois_native.js';
+import { CrtShConnector } from './crt_sh.js';
+import { HaveIBeenPwnedConnector } from './haveibeenpwned.js';
+import { WebScraperConnector } from './web_scraper.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, '..', '..', 'config', 'connectors.json');
@@ -30,7 +36,13 @@ const CONNECTOR_MAP = {
     phoneinfoga: PhoneInfogaConnector,
     nmap: NmapConnector,
     dnsrecon: DnsreconConnector,
-    photon: PhotonConnector
+    photon: PhotonConnector,
+    github: GitHubConnector,
+    dns_native: DnsNativeConnector,
+    whois_native: WhoisNativeConnector,
+    crt_sh: CrtShConnector,
+    haveibeenpwned: HaveIBeenPwnedConnector,
+    web_scraper: WebScraperConnector
 };
 
 export class ConnectorRegistry {

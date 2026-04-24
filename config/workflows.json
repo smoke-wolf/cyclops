@@ -8,7 +8,7 @@
           "id": "seed_expansion",
           "name": "Seed Expansion",
           "description": "Expand initial knowns into all available identifiers",
-          "connectors": ["sherlock", "holehe", "maigret", "whatsmyname", "socialscan", "ghunt"],
+          "connectors": ["sherlock", "holehe", "maigret", "whatsmyname", "socialscan", "ghunt", "github", "haveibeenpwned"],
           "input_types": ["username", "email", "phone", "name"],
           "depends_on": [],
           "timeout": 300000,
@@ -32,7 +32,7 @@
           "id": "infrastructure_map",
           "name": "Infrastructure Mapping",
           "description": "Map any associated domains, IPs, and services",
-          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon"],
+          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon", "dns_native", "whois_native", "crt_sh", "web_scraper"],
           "input_types": ["domain", "ip"],
           "depends_on": ["seed_expansion"],
           "timeout": 600000,
@@ -81,7 +81,7 @@
         {
           "id": "subdomain_enum",
           "name": "Subdomain Enumeration",
-          "connectors": ["amass", "subfinder", "dnsrecon"],
+          "connectors": ["amass", "subfinder", "dnsrecon", "dns_native", "crt_sh", "whois_native"],
           "input_types": ["domain"],
           "depends_on": [],
           "timeout": 600000
@@ -89,7 +89,7 @@
         {
           "id": "service_scan",
           "name": "Service Discovery",
-          "connectors": ["shodan", "censys", "nmap"],
+          "connectors": ["shodan", "censys", "nmap", "web_scraper"],
           "input_types": ["ip", "domain", "subdomain"],
           "depends_on": ["subdomain_enum"],
           "timeout": 600000
@@ -135,7 +135,7 @@
         {
           "id": "platform_search",
           "name": "Platform Search",
-          "connectors": ["sherlock", "maigret", "whatsmyname", "socialscan"],
+          "connectors": ["sherlock", "maigret", "whatsmyname", "socialscan", "github"],
           "input_types": ["username"],
           "depends_on": [],
           "timeout": 300000
@@ -143,7 +143,7 @@
         {
           "id": "profile_scrape",
           "name": "Profile Data Extraction",
-          "connectors": ["photon"],
+          "connectors": ["photon", "web_scraper"],
           "input_types": ["url"],
           "depends_on": ["platform_search"],
           "timeout": 300000
@@ -152,7 +152,7 @@
           "id": "identity_pivot",
           "name": "Identity Pivot",
           "description": "Extract emails from profiles, run email-based tools",
-          "connectors": ["holehe", "ghunt", "h8mail"],
+          "connectors": ["holehe", "ghunt", "h8mail", "haveibeenpwned"],
           "input_types": ["email"],
           "depends_on": ["profile_scrape"],
           "timeout": 180000
@@ -182,7 +182,7 @@
         {
           "id": "sweep",
           "name": "Surface Sweep",
-          "connectors": ["sherlock", "holehe", "subfinder", "socialscan"],
+          "connectors": ["sherlock", "holehe", "subfinder", "socialscan", "github", "dns_native", "haveibeenpwned"],
           "input_types": ["username", "email", "domain"],
           "depends_on": [],
           "timeout": 60000

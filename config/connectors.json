@@ -241,6 +241,79 @@
       "health_check": "dnsrecon --version",
       "args_template": "-d {domain} -j /dev/stdout",
       "enabled": true
+    },
+    "github": {
+      "name": "GitHub",
+      "type": "code_platform",
+      "binary": null,
+      "native": true,
+      "accepts": ["username"],
+      "outputs": ["account", "email", "person", "repository", "organization", "url"],
+      "timeout": 60000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "dns_native": {
+      "name": "DNS-Native",
+      "type": "dns_enum",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain"],
+      "outputs": ["ip", "subdomain", "dns_record", "email", "domain"],
+      "timeout": 120000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "whois_native": {
+      "name": "WHOIS-Native",
+      "type": "domain_registration",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain"],
+      "outputs": ["domain", "email", "person", "organization"],
+      "timeout": 30000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "crt_sh": {
+      "name": "crt.sh",
+      "type": "certificate_transparency",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain"],
+      "outputs": ["subdomain", "certificate"],
+      "timeout": 60000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "haveibeenpwned": {
+      "name": "HaveIBeenPwned",
+      "type": "breach_lookup",
+      "binary": null,
+      "native": true,
+      "accepts": ["email"],
+      "outputs": ["breach", "domain"],
+      "timeout": 30000,
+      "priority": 1,
+      "parallel": true,
+      "api_key_env": "HIBP_API_KEY",
+      "enabled": true
+    },
+    "web_scraper": {
+      "name": "WebScraper",
+      "type": "web_intelligence",
+      "binary": null,
+      "native": true,
+      "accepts": ["url", "domain"],
+      "outputs": ["email", "account", "phone", "url", "technology"],
+      "timeout": 30000,
+      "priority": 2,
+      "parallel": true,
+      "enabled": true
     }
   },
   "execution": {

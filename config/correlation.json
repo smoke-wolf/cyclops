@@ -51,6 +51,18 @@
     "dns_record": {
       "fields": ["type", "name", "value", "ttl"],
       "link_weight": 0.4
+    },
+    "repository": {
+      "fields": ["name", "url", "language", "homepage"],
+      "link_weight": 0.5
+    },
+    "organization": {
+      "fields": ["name", "url"],
+      "link_weight": 0.6
+    },
+    "technology": {
+      "fields": ["url", "technologies"],
+      "link_weight": 0.3
     }
   },
   "linking_rules": [
@@ -116,6 +128,54 @@
       "to": "person",
       "match_fields": ["number"],
       "confidence": 0.8,
+      "bidirectional": true
+    },
+    {
+      "name": "account_to_repository",
+      "from": "account",
+      "to": "repository",
+      "match_fields": ["username"],
+      "confidence": 0.8,
+      "bidirectional": false
+    },
+    {
+      "name": "person_to_organization",
+      "from": "person",
+      "to": "organization",
+      "match_fields": ["name"],
+      "confidence": 0.5,
+      "bidirectional": true
+    },
+    {
+      "name": "domain_to_url",
+      "from": "domain",
+      "to": "url",
+      "match_fields": ["name"],
+      "confidence": 0.6,
+      "bidirectional": false
+    },
+    {
+      "name": "account_to_person",
+      "from": "account",
+      "to": "person",
+      "match_fields": ["username"],
+      "confidence": 0.75,
+      "bidirectional": true
+    },
+    {
+      "name": "domain_to_technology",
+      "from": "domain",
+      "to": "technology",
+      "match_fields": ["name"],
+      "confidence": 0.6,
+      "bidirectional": false
+    },
+    {
+      "name": "repository_to_domain",
+      "from": "repository",
+      "to": "domain",
+      "match_fields": ["homepage"],
+      "confidence": 0.7,
       "bidirectional": true
     }
   ],
