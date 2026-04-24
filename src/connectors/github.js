@@ -226,6 +226,7 @@ export class GitHubConnector extends BaseConnector {
             this.telemetry.connectorEnd(investigationId, this.name, phaseId, {
                 status: 'failed', entitiesFound: 0, input: { type: inputType, value: inputValue }
             });
+            this.telemetry.error(investigationId, this.name, e.message, phaseId);
             return { status: 'failed', error: e.message };
         }
     }
@@ -235,18 +236,31 @@ export class GitHubConnector extends BaseConnector {
             const opts = {
                 hostname: 'api.github.com',
                 path,
-                headers: { 'User-Agent': 'cyclops-osint', 'Accept': 'application/vnd.github.v3+json' }
+                headers: { 'User-Agent': 'cyclops-osint', 'Accept': 'application/vnd.github.v3+json' },
+                timeout: 15000
             };
             const token = process.env.GITHUB_TOKEN;
             if (token) opts.headers['Authorization'] = `Bearer ${token}`;
 
-            https.get(opts, res => {
+            const req = https.get(opts, res => {
+                if (res.statusCode === 403 || res.statusCode === 429) {
+                    resolve({ message: 'rate limited', status: res.statusCode });
+                    res.resume();
+                    return;
+                }
+                if (res.statusCode >= 400) {
+                    resolve({ message: `HTTP ${res.statusCode}`, status: res.statusCode });
+                    res.resume();
+                    return;
+                }
                 let data = '';
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => {
                     try { resolve(JSON.parse(data)); } catch { resolve(null); }
                 });
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); resolve(null); });
         });
     }
 

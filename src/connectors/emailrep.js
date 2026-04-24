@@ -13,7 +13,9 @@ export class EmailRepConnector extends BaseConnector {
 
         try {
             const entities = [];
-            const data = JSON.parse(await this._fetch(`https://emailrep.io/${encodeURIComponent(inputValue)}`));
+            const raw = await this._fetch(`https://emailrep.io/${encodeURIComponent(inputValue)}`);
+            let data;
+            try { data = JSON.parse(raw); } catch { throw new Error('emailrep returned invalid JSON'); }
 
             if (data.email) {
                 entities.push({
@@ -105,11 +107,15 @@ export class EmailRepConnector extends BaseConnector {
             const opts = { headers: { 'User-Agent': 'cyclops-osint', 'Accept': 'application/json' }, timeout: 15000 };
             const key = process.env.EMAILREP_API_KEY;
             if (key) opts.headers['Key'] = key;
-            https.get(url, opts, res => {
+            const req = https.get(url, opts, res => {
+                if (res.statusCode === 429) { reject(new Error('emailrep rate limited')); res.resume(); return; }
+                if (res.statusCode >= 400) { reject(new Error(`emailrep HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => resolve(data));
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('emailrep timeout')); });
         });
     }
 

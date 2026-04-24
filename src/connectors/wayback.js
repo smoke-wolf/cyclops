@@ -16,7 +16,8 @@ export class WaybackConnector extends BaseConnector {
             const domain = inputValue.replace(/^https?:\/\//, '');
 
             const urls = await this._fetch(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(domain)}/*&output=json&fl=original,timestamp,mimetype,statuscode&collapse=urlkey&limit=200`);
-            const records = JSON.parse(urls);
+            let records;
+            try { records = JSON.parse(urls); } catch { records = []; }
 
             if (Array.isArray(records) && records.length > 1) {
                 const seen = new Set();
@@ -111,11 +112,14 @@ export class WaybackConnector extends BaseConnector {
 
     _fetch(url) {
         return new Promise((resolve, reject) => {
-            https.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 30000 }, res => {
+            const req = https.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 30000 }, res => {
+                if (res.statusCode >= 400) { reject(new Error(`wayback HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => resolve(data));
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('wayback timeout')); });
         });
     }
 

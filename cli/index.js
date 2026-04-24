@@ -21,6 +21,10 @@ const COL = (n) => `\x1b[${n}G`;
 
 const SPINNER = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
+process.on('exit', () => process.stdout.write(SHOW_CUR));
+process.on('SIGINT', () => { process.stdout.write(SHOW_CUR); process.exit(130); });
+process.on('SIGTERM', () => { process.stdout.write(SHOW_CUR); process.exit(143); });
+
 function pad(s, n) { return String(s).padEnd(n).slice(0, n); }
 function rpad(s, n) { return String(s).padStart(n).slice(0, n); }
 function trunc(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }

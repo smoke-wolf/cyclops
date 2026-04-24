@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="712" height="1286" viewBox="0 0 712 1286">
+<defs><style>text { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Menlo, monospace; font-size: 14px; }</style></defs>
+<rect width="712" height="1286" rx="10" fill="#0d1117"/>
+<rect width="712" height="36" rx="10" fill="#161b22"/>
+<rect x="0" y="26" width="712" height="10" fill="#161b22"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="18" r="6" fill="#febc2e"/>
+<circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text x="356" y="22" fill="#6e7681" text-anchor="middle" font-size="13">cyclops — test suite (40/40)</text>
+<text y="70"><tspan x="20" fill="#c9d1d9" font-weight="normal">$ </tspan><tspan x="39.2" fill="#c9d1d9" font-weight="bold">node test/run.js</tspan></text>
+<text y="90"></text>
+<text y="110"><tspan x="20" fill="#ff7b72" font-weight="bold">CYCLOPS</tspan><tspan x="87.2" fill="#c9d1d9" font-weight="normal"> </tspan><tspan x="96.8" fill="#6e7681" font-weight="normal">Test Suite</tspan></text>
+<text y="130"></text>
+<text y="150"><tspan x="20" fill="#c9d1d9" font-weight="bold">State Layer</tspan></text>
+<text y="170"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> create investigation</tspan></text>
+<text y="190"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> add and retrieve knowns</tspan></text>
+<text y="210"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> knowns are case-normalized</tspan></text>
+<text y="230"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> entity dedup with confidence boost</tspan></text>
+<text y="250"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> entity confidence caps at 1.0</tspan></text>
+<text y="270"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> entity fingerprinting</tspan></text>
+<text y="290"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> entity links</tspan></text>
+<text y="310"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> connector run tracking</tspan></text>
+<text y="330"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> investigation status lifecycle</tspan></text>
+<text y="350"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> list investigations with status filter</tspan></text>
+<text y="370"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> getStats returns correct type breakdown</tspan></text>
+<text y="390"></text>
+<text y="410"><tspan x="20" fill="#c9d1d9" font-weight="bold">Connector Registry</tspan></text>
+<text y="430"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> registry loads all 25 connectors</tspan></text>
+<text y="450"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> native connectors flagged correctly</tspan></text>
+<text y="470"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> filter connectors by input type</tspan></text>
+<text y="490"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> forPhase returns correct connectors</tspan></text>
+<text y="510"></text>
+<text y="530"><tspan x="20" fill="#c9d1d9" font-weight="bold">Correlation Engine</tspan></text>
+<text y="550"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> correlate entities across sources</tspan></text>
+<text y="570"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> build entity graph with correct structure</tspan></text>
+<text y="590"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> fuzzy matching links similar usernames</tspan></text>
+<text y="610"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> multi-source bonus applied</tspan></text>
+<text y="630"></text>
+<text y="650"><tspan x="20" fill="#c9d1d9" font-weight="bold">Report Generation</tspan></text>
+<text y="670"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> generate JSON report</tspan></text>
+<text y="690"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> generate HTML report</tspan></text>
+<text y="710"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> generate Markdown report</tspan></text>
+<text y="730"></text>
+<text y="750"><tspan x="20" fill="#c9d1d9" font-weight="bold">Live Connector Tests</tspan></text>
+<text y="770"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> GitHub: smoke-wolf </tspan><tspan x="240.8" fill="#6e7681" font-weight="normal">(40 entities)</tspan></text>
+<text y="790"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> DNS-Native: github.com </tspan><tspan x="279.2" fill="#6e7681" font-weight="normal">(86 entities)</tspan></text>
+<text y="810"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> WHOIS-Native: github.com</tspan></text>
+<text y="830"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> crt.sh: github.com </tspan><tspan x="240.8" fill="#6e7681" font-weight="normal">(110 subdomains)</tspan></text>
+<text y="850"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> HaveIBeenPwned: test@example.com</tspan></text>
+<text y="870"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> WebScraper: github.com </tspan><tspan x="279.2" fill="#6e7681" font-weight="normal">(38 entities)</tspan></text>
+<text y="890"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> Wayback: example.com</tspan></text>
+<text y="910"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> IP-API: 8.8.8.8 </tspan><tspan x="212" fill="#6e7681" font-weight="normal">(3 entities)</tspan></text>
+<text y="930"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> EmailRep: test@example.com</tspan></text>
+<text y="950"></text>
+<text y="970"><tspan x="20" fill="#c9d1d9" font-weight="bold">Engine Integration</tspan></text>
+<text y="990"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> quick_recon investigation</tspan></text>
+<text y="1010"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> full username_trace: smoke-wolf </tspan><tspan x="365.6" fill="#6e7681" font-weight="normal">(53 entities, 35 links)</tspan></text>
+<text y="1030"></text>
+<text y="1050"><tspan x="20" fill="#c9d1d9" font-weight="bold">CLI Commands</tspan></text>
+<text y="1070"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> --help exits cleanly</tspan></text>
+<text y="1090"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> workflows command</tspan></text>
+<text y="1110"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> connectors command</tspan></text>
+<text y="1130"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> list command</tspan></text>
+<text y="1150"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">✓</tspan><tspan x="48.800000000000004" fill="#c9d1d9" font-weight="normal"> investigate with missing known fails</tspan></text>
+<text y="1170"></text>
+<text y="1190"><tspan x="20" fill="#6e7681" font-weight="normal">══════════════════════════════════════════════════</tspan></text>
+<text y="1210"><tspan x="20" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="39.2" fill="#7ee787" font-weight="normal">40 passed</tspan><tspan x="125.6" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="144.79999999999998" fill="#6e7681" font-weight="normal">0 failed</tspan><tspan x="221.59999999999997" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="240.79999999999995" fill="#6e7681" font-weight="normal">0 skipped</tspan><tspan x="327.19999999999993" fill="#c9d1d9" font-weight="normal">  </tspan><tspan x="346.3999999999999" fill="#6e7681" font-weight="normal">71.3s</tspan></text>
+<text y="1230"><tspan x="20" fill="#6e7681" font-weight="normal">══════════════════════════════════════════════════</tspan></text>
+</svg>

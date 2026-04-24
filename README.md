@@ -1,119 +1,118 @@
 # CYCLOPS
 
-Unified OSINT targeting pipeline. Enter knowns, get intelligence.
+Unified OSINT targeting pipeline. Config-driven orchestration across 25 connectors in parallel — entity graph correlation, fuzzy matching, multi-source confidence scoring, and autonomous report generation.
 
-Config-driven orchestration engine that fans out across 25 connectors in parallel, normalizes results into a unified entity graph, correlates across sources, and generates reports autonomously.
+Enter knowns. Get intelligence.
 
-## Architecture
-
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌────────────┐
-│   CLI / API  │────▶│    Engine     │────▶│  Connectors  │────▶│  External   │
-│              │     │  (Workflow    │     │  (25 tools)  │     │  OSINT      │
-│  cyclops     │     │   DAG exec)  │     │              │     │  Sources    │
-└──────┬───────┘     └──────┬───────┘     └──────┬───────┘     └────────────┘
-       │                    │                    │
-       │              ┌─────▼──────┐       ┌─────▼──────┐
-       │              │  Correlator │       │  Telemetry  │
-       │              │  (linking,  │       │  (SSE, WS,  │
-       │              │   scoring)  │       │   SQLite)   │
-       │              └─────┬──────┘       └────────────┘
-       │              ┌─────▼──────┐
-       └─────────────▶│  Reporter   │
-                      │  (JSON,HTML │
-                      │   Markdown) │
-                      └─────────────┘
-```
+![investigation](assets/investigate.svg)
 
 ## Quick Start
 
 ```bash
 npm install
-node cyclops.js investigate -n "target" -w person_full \
-  --known username:johndoe --known email:john@example.com
+cyclops investigate john_doe -t username -w username_trace --known email:john@example.com
 ```
 
-### Dashboard
+That's it. CYCLOPS fans out across every available connector, builds an entity graph, correlates across sources, and generates a report.
 
-```bash
-node cyclops.js serve --port 3100
-# http://localhost:3100
-```
+## CLI
 
-### CLI Commands
+![help](assets/help.svg)
 
 | Command | Description |
 |---------|-------------|
-| `investigate -n <name> -k <type:value>` | Launch investigation with live progress |
-| `list` | List all investigations |
-| `status <id>` | Full investigation status with bars |
-| `entities <id>` | Browse/search/filter entities |
-| `graph <id>` | Print entity link tree |
+| `investigate <name> -t <type> -w <workflow>` | Run investigation with live progress |
+| `list` | All investigations with status |
+| `status <id>` | Full investigation breakdown |
+| `entities <id>` | Browse, search, filter entities |
+| `graph <id>` | Entity link tree |
 | `report <id>` | Generate report (json, html, md) |
 | `export <id>` | Export data (json, csv, ndjson) |
 | `connectors` | List connectors (`--health`, `--native`) |
-| `workflows` | Show available workflows |
+| `workflows` | Available workflows |
 | `purge <id>` | Delete investigation (`--all`) |
 | `serve` | Start dashboard server |
 
-## Connectors (25)
+## Architecture
 
-### Native (no install, work out of the box)
+```
+CLI / API ──▶ Engine (DAG) ──▶ Connectors (25) ──▶ External OSINT Sources
+                  │                    │
+            Correlator            Telemetry
+            (linking,             (SSE, WS,
+             scoring)              SQLite)
+                  │
+             Reporter
+           (JSON, HTML, MD)
+```
 
-| Connector | Type | Accepts | Outputs |
-|-----------|------|---------|---------|
-| GitHub | Code platform | username | accounts, repos, emails, orgs, collaborators |
-| DNS-Native | DNS enumeration | domain | IPs, subdomains, records, SPF/DMARC emails |
-| WHOIS-Native | Domain registration | domain | registrar, nameservers, contacts |
-| crt.sh | Certificate transparency | domain | subdomains, certificates |
-| HaveIBeenPwned | Breach lookup | email | breaches, pastes |
-| WebScraper | Web intelligence | url, domain | emails, social accounts, phones, tech stack |
-| Wayback Machine | Historical archive | domain | archived URLs, interesting files, API endpoints |
-| IP-API | IP geolocation | ip | geo, ASN, reverse DNS, proxy detection |
-| EmailRep | Email reputation | email | reputation, profiles, breach flags |
+The engine resolves workflow phases as a DAG — connectors within each phase run in parallel, and each phase's output feeds the next as input. Entity dedup uses SHA-256 fingerprinting. Correlation uses Levenshtein fuzzy matching with configurable thresholds. Multi-source corroboration boosts confidence scores.
 
-### Binary (install separately)
+## Connectors
 
-| Connector | Type | Install |
-|-----------|------|---------|
-| Sherlock | Username enum | `pip3 install sherlock-project` |
-| Holehe | Email enum | `pip3 install holehe` |
-| Maigret | Username deep | `pip3 install maigret` |
-| theHarvester | Domain recon | `pip3 install theHarvester` |
-| Amass | Subdomain enum | `go install github.com/owasp-amass/amass/v4/...@master` |
-| Subfinder | Subdomain enum | `go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest` |
-| Shodan | IP recon | `pip3 install shodan` |
-| Censys | Cert recon | `pip3 install censys` |
-| PhoneInfoga | Phone recon | `go install github.com/sundowndev/phoneinfoga/v2@latest` |
-| h8mail | Breach lookup | `pip3 install h8mail` |
-| WhatsMyName | Username enum | `pip3 install whatsmyname` |
-| socialscan | Availability | `pip3 install socialscan` |
-| Photon | Web crawler | `pip3 install photon` |
-| GHunt | Google OSINT | `pip3 install ghunt` |
-| Nmap | Port scan | `brew install nmap` |
-| DNSrecon | DNS enum | `pip3 install dnsrecon` |
+![connectors](assets/connectors.svg)
 
-Binary connectors are auto-skipped if not installed. Native connectors always run.
+### Native (9) — zero dependencies, always available
+
+| Connector | Accepts | Outputs |
+|-----------|---------|---------|
+| GitHub | username | accounts, repos, emails, orgs, collaborators, gists |
+| DNS-Native | domain | IPs, subdomains, records, SPF/DMARC emails |
+| WHOIS-Native | domain | registrar, nameservers, contacts, dates |
+| crt.sh | domain | subdomains, certificates (CT logs) |
+| HaveIBeenPwned | email | breaches, pastes |
+| WebScraper | url, domain | emails, social accounts, phones, tech stack |
+| Wayback Machine | domain | archived URLs, interesting files, API endpoints |
+| IP-API | ip | geolocation, ASN, reverse DNS, proxy detection |
+| EmailRep | email | reputation, profiles, breach flags |
+
+### Binary (16) — auto-skipped if not installed
+
+| Connector | Install |
+|-----------|---------|
+| Sherlock | `pip3 install sherlock-project` |
+| Holehe | `pip3 install holehe` |
+| Maigret | `pip3 install maigret` |
+| theHarvester | `pip3 install theHarvester` |
+| Amass | `go install github.com/owasp-amass/amass/v4/...@master` |
+| Subfinder | `go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest` |
+| Shodan | `pip3 install shodan` |
+| Censys | `pip3 install censys` |
+| PhoneInfoga | `go install github.com/sundowndev/phoneinfoga/v2@latest` |
+| h8mail | `pip3 install h8mail` |
+| WhatsMyName | `pip3 install whatsmyname` |
+| socialscan | `pip3 install socialscan` |
+| Photon | `pip3 install photon` |
+| GHunt | `pip3 install ghunt` |
+| Nmap | `brew install nmap` |
+| DNSrecon | `pip3 install dnsrecon` |
+
+Health checks run on startup. Failed binaries are silently skipped. Native connectors always run.
 
 ## Workflows
 
-### person_full
-Full person investigation. Seed expansion → breach check → infrastructure mapping → deep profiling → correlation → reporting.
+![workflows](assets/workflows.svg)
 
-### domain_recon
-Infrastructure and personnel enumeration from a domain. Subdomain enum → service discovery → personnel harvest → email enum → correlation → reporting.
-
-### username_trace
-Trace a username across platforms. Platform search → profile scrape → identity pivot → correlation → reporting.
-
-### quick_recon
-60-second surface sweep.
+| Workflow | Phases | Description |
+|----------|--------|-------------|
+| `person_full` | 6 | Full person investigation — expansion, breach check, infrastructure, deep profiling, correlation, reporting |
+| `domain_recon` | 6 | Infrastructure + personnel from a domain — subdomains, services, personnel, email enum, correlation, reporting |
+| `username_trace` | 5 | Cross-platform username trace — platform search, profile scrape, identity pivot, correlation, reporting |
+| `quick_recon` | 2 | 60-second surface sweep |
 
 ## Entity Graph
 
-The correlation engine links entities across tools using fuzzy matching and confidence scoring. Multi-source corroboration boosts confidence. The graph visualizer (`/graph.html`) renders the entity network with force-directed layout, drag, zoom, and hover inspection.
+![graph](assets/graph.svg)
 
-**Entity types:** person, account, email, domain, subdomain, ip, port, certificate, breach, credential, phone, url, dns_record, repository, organization, technology
+The correlation engine links entities across connectors using configurable rules and Levenshtein fuzzy matching. Multi-source corroboration automatically boosts confidence.
+
+**16 entity types:** person, account, email, domain, subdomain, ip, port, certificate, breach, credential, phone, url, dns_record, repository, organization, technology
+
+## Entity Browser
+
+![entities](assets/entities.svg)
+
+Filter by type, search by value, sort by confidence. Grouped view shows entities by category with inline detail.
 
 ## API
 
@@ -124,37 +123,43 @@ The correlation engine links entities across tools using fuzzy matching and conf
 | GET | `/api/investigations` | List all |
 | GET | `/api/investigation/:id` | Status + stats |
 | GET | `/api/investigation/:id/entities` | Entity list |
-| GET | `/api/investigation/:id/knowns` | Known inputs |
 | GET | `/api/investigation/:id/graph` | Entity graph |
 | GET | `/api/investigation/:id/report?format=html` | Report |
 | POST | `/api/investigation/:id/abort` | Abort |
-| GET | `/api/connectors` | Connector list |
-| GET | `/api/connectors/health` | Health check |
+| GET | `/api/connectors` | Connector list + health |
 | GET | `/api/workflows` | Workflow list |
 | GET | `/api/events` | SSE event stream |
 
 ## Configuration
 
-All behavior is config-driven:
+All behavior is config-driven. No code changes needed.
 
-- `config/connectors.json` — connector definitions, timeouts, API keys
+- `config/connectors.json` — connector definitions, timeouts, input caps
 - `config/workflows.json` — workflow phases, dependencies, connector assignments
-- `config/correlation.json` — entity types, linking rules, scoring parameters
+- `config/correlation.json` — entity types, linking rules, scoring thresholds
 
 ## API Keys (Optional)
 
 ```bash
+export GITHUB_TOKEN=...        # 60 → 5000 req/hr
 export SHODAN_API_KEY=...
 export CENSYS_API_ID=...
 export CENSYS_API_SECRET=...
 export HIBP_API_KEY=...
 export EMAILREP_API_KEY=...
-export GITHUB_TOKEN=...    # raises rate limit from 60 to 5000 req/hr
 ```
 
 ## Testing
 
+![tests](assets/tests.svg)
+
 ```bash
-node test/run.js           # unit + live connector tests
+node test/run.js           # 40 tests: state, registry, correlation, reports, telemetry, live connectors, engine, CLI
 node test/deep_recon.js    # full investigation with telemetry output
 ```
+
+40 tests covering every layer — state management, connector registry, correlation engine, report generation, telemetry broadcasting, live connector integration (GitHub, DNS, WHOIS, crt.sh, HIBP, WebScraper, Wayback, IP-API, EmailRep), engine workflow execution, and CLI commands.
+
+## License
+
+MIT

@@ -13,7 +13,9 @@ export class IpApiConnector extends BaseConnector {
 
         try {
             const entities = [];
-            const data = JSON.parse(await this._fetch(`http://ip-api.com/json/${encodeURIComponent(inputValue)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query`));
+            const raw = await this._fetch(`http://ip-api.com/json/${encodeURIComponent(inputValue)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query`);
+            let data;
+            try { data = JSON.parse(raw); } catch { throw new Error('ip-api returned invalid JSON'); }
 
             if (data.status === 'success') {
                 entities.push({
@@ -85,11 +87,15 @@ export class IpApiConnector extends BaseConnector {
 
     _fetch(url) {
         return new Promise((resolve, reject) => {
-            http.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 10000 }, res => {
+            const req = http.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 10000 }, res => {
+                if (res.statusCode === 429) { reject(new Error('ip-api rate limited')); res.resume(); return; }
+                if (res.statusCode >= 400) { reject(new Error(`ip-api HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => resolve(data));
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('ip-api timeout')); });
         });
     }
 

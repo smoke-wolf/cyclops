@@ -154,15 +154,20 @@ export class WebScraperConnector extends BaseConnector {
         return new Promise((resolve, reject) => {
             if (maxRedirects <= 0) return reject(new Error('too many redirects'));
             const mod = url.startsWith('https') ? https : http;
-            mod.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' }, timeout: 15000 }, res => {
+            const req = mod.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' }, timeout: 15000 }, res => {
                 if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                    res.resume();
                     const next = res.headers.location.startsWith('http') ? res.headers.location : new URL(res.headers.location, url).href;
                     return this._fetch(next, maxRedirects - 1).then(resolve).catch(reject);
                 }
+                if (res.statusCode === 429) { reject(new Error('web_scraper rate limited')); res.resume(); return; }
+                if (res.statusCode >= 400) { reject(new Error(`web_scraper HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';
                 res.on('data', chunk => { data += chunk; if (data.length > 2_000_000) { res.destroy(); resolve(data); } });
                 res.on('end', () => resolve(data));
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('web_scraper timeout')); });
         });
     }
 

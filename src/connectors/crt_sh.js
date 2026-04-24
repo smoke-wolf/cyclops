@@ -80,11 +80,15 @@ export class CrtShConnector extends BaseConnector {
 
     _fetch(url) {
         return new Promise((resolve, reject) => {
-            https.get(url, { headers: { 'User-Agent': 'cyclops-osint' } }, res => {
+            const req = https.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 30000 }, res => {
+                if (res.statusCode === 429) { reject(new Error('crt.sh returned HTML (rate limited or down)')); res.resume(); return; }
+                if (res.statusCode >= 400) { reject(new Error(`crt.sh HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';
-                res.on('data', chunk => { data += chunk; });
+                res.on('data', chunk => { data += chunk; if (data.length > 5e6) { req.destroy(); reject(new Error('response too large')); } });
                 res.on('end', () => resolve(data));
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('crt.sh timeout')); });
         });
     }
 

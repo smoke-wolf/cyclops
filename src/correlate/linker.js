@@ -26,7 +26,7 @@ export class Correlator {
                     if (from.id === to.id) continue;
 
                     const confidence = this._matchScore(from, to, rule);
-                    if (confidence < (this.config.scoring?.fuzzy_match_threshold || 0.5)) continue;
+                    if (confidence < rule.confidence * (this.config.scoring?.min_match_ratio || 0.5)) continue;
 
                     const linkKey = `${from.id}:${to.id}:${rule.name}`;
                     const reverseLinkKey = `${to.id}:${from.id}:${rule.name}`;
