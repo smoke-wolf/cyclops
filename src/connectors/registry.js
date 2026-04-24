@@ -23,6 +23,7 @@ import { WebScraperConnector } from './web_scraper.js';
 import { WaybackConnector } from './wayback.js';
 import { IpApiConnector } from './ip_api.js';
 import { EmailRepConnector } from './emailrep.js';
+import { VirusTotalConnector } from './virustotal.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, '..', '..', 'config', 'connectors.json');
@@ -48,7 +49,8 @@ const CONNECTOR_MAP = {
     web_scraper: WebScraperConnector,
     wayback: WaybackConnector,
     ip_api: IpApiConnector,
-    emailrep: EmailRepConnector
+    emailrep: EmailRepConnector,
+    virustotal: VirusTotalConnector
 };
 
 export class ConnectorRegistry {

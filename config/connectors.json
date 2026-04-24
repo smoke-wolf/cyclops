@@ -350,6 +350,19 @@
       "priority": 1,
       "parallel": true,
       "enabled": true
+    },
+    "virustotal": {
+      "name": "VirusTotal",
+      "type": "threat_intelligence",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain", "ip", "url"],
+      "outputs": ["domain", "ip", "subdomain", "dns_record", "url"],
+      "timeout": 30000,
+      "priority": 1,
+      "parallel": true,
+      "api_key_env": "VIRUSTOTAL_API_KEY",
+      "enabled": true
     }
   },
   "execution": {

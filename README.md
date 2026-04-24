@@ -1,9 +1,9 @@
 <p align="center">
   <h1 align="center">CYCLOPS</h1>
-  <p align="center">Unified OSINT targeting pipeline. 25 connectors. Entity graph. Auto-correlation. One command.</p>
+  <p align="center">Unified OSINT targeting pipeline. 26 connectors. Entity graph. Auto-correlation. One command.</p>
   <p align="center">
     <a href="https://github.com/smoke-wolf/cyclops/actions"><img src="https://github.com/smoke-wolf/cyclops/actions/workflows/test.yml/badge.svg" alt="tests"></a>
-    <img src="https://img.shields.io/badge/connectors-25-blue" alt="25 connectors">
+    <img src="https://img.shields.io/badge/connectors-25-blue" alt="26 connectors">
     <img src="https://img.shields.io/badge/node-%3E%3D20-green" alt="node >= 20">
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license"></a>
   </p>
@@ -85,7 +85,7 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 
 ![connectors](assets/connectors.svg)
 
-### Native (9) — zero dependencies
+### Native (10) — zero dependencies
 
 | Connector | Accepts | Outputs |
 |-----------|---------|---------|
@@ -98,6 +98,7 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 | Wayback Machine | domain | archived URLs, interesting files, API endpoints |
 | IP-API | ip | geolocation, ASN, reverse DNS, proxy detection |
 | EmailRep | email | reputation, profiles, breach flags |
+| VirusTotal | domain, ip, url | threat intel, subdomains, DNS, resolutions |
 
 ### Binary (16) — auto-skipped if not installed
 
@@ -188,6 +189,7 @@ export CENSYS_API_ID=...
 export CENSYS_API_SECRET=...
 export HIBP_API_KEY=...
 export EMAILREP_API_KEY=...
+export VIRUSTOTAL_API_KEY=...   # domain/IP/URL threat intel
 export IP_API_KEY=...          # enables HTTPS via pro endpoint
 ```
 
