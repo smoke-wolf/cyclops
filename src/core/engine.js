@@ -108,22 +108,39 @@ export class Engine {
         const knowns = this.state.getKnowns(investigationId);
         const tasks = [];
 
+        if (!this._healthCache) this._healthCache = new Map();
+
         for (const { key, connector } of connectors) {
+            if (!connector.config.native && connector.config.binary) {
+                if (!this._healthCache.has(key)) {
+                    const h = await connector.healthCheck();
+                    this._healthCache.set(key, h.ok);
+                }
+                if (!this._healthCache.get(key)) continue;
+            }
+
             const acceptedKnowns = knowns.filter(k => connector.config.accepts.includes(k.type));
 
             if (acceptedKnowns.length === 0 && phase.input_types) {
                 const entities = this.state.getEntities(investigationId);
+                const seen = new Set(acceptedKnowns.map(k => `${k.type}:${k.value}`));
                 for (const entity of entities) {
                     for (const inputType of phase.input_types) {
                         const value = this._entityToInput(entity, inputType);
                         if (value && connector.config.accepts.includes(inputType)) {
-                            acceptedKnowns.push({ type: inputType, value });
+                            const key2 = `${inputType}:${value}`;
+                            if (!seen.has(key2)) {
+                                seen.add(key2);
+                                acceptedKnowns.push({ type: inputType, value });
+                            }
                         }
                     }
                 }
             }
 
-            for (const known of acceptedKnowns) {
+            const maxInputsPerConnector = connector.config.native ? 20 : 5;
+            const limited = acceptedKnowns.slice(0, maxInputsPerConnector);
+            for (const known of limited) {
                 tasks.push({ connector, key, inputType: known.type, inputValue: known.value });
             }
         }
