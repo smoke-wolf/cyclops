@@ -3,9 +3,17 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 export class PhotonConnector extends BaseConnector {
+    buildArgs(inputType, inputValue) {
+        const sanitized = inputValue.replace(/[^a-zA-Z0-9._-]/g, '_');
+        let template = this.config.args_template;
+        template = template.replaceAll('{target}', sanitized).replaceAll('{url}', sanitized).replaceAll('{domain}', sanitized);
+        return template.split(' ').filter(Boolean);
+    }
+
     parse(stdout, stderr, inputType, inputValue) {
         const entities = [];
-        const outputDir = `/tmp/cyclops_photon_${inputValue}`;
+        const sanitized = inputValue.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const outputDir = `/tmp/cyclops_photon_${sanitized}`;
 
         const parseFile = (filePath, parser) => {
             if (!existsSync(filePath)) return;

@@ -82,9 +82,12 @@ export class State {
             credential: ['email', 'source_breach'],
             phone: ['number'],
             url: ['url'],
-            dns_record: ['type', 'name', 'value']
+            dns_record: ['type', 'name', 'value'],
+            repository: ['name'],
+            organization: ['name'],
+            technology: ['url']
         };
-        const fields = keyFields[type] || Object.keys(data);
+        const fields = keyFields[type] || Object.keys(data).sort();
         const key = fields.map(f => data[f] || '').join('|');
         return createHash('sha256').update(`${type}:${key}`).digest('hex').slice(0, 16);
     }

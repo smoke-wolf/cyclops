@@ -1,7 +1,9 @@
 cyclops.db
-test/
-scripts/
-dashboard/
 *.db-journal
 *.db-wal
+*.db-shm
+test/
+scripts/
+assets/
 .git/
+.github/

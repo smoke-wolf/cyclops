@@ -101,16 +101,19 @@ export class HaveIBeenPwnedConnector extends BaseConnector {
             const apiKey = process.env.HIBP_API_KEY;
             if (apiKey) opts.headers['hibp-api-key'] = apiKey;
 
-            https.get(opts, res => {
-                if (res.statusCode === 404) return resolve([]);
-                if (res.statusCode === 401) return reject(new Error('HIBP API key required (set HIBP_API_KEY)'));
-                if (res.statusCode === 429) return reject(new Error('HIBP rate limited'));
+            const req = https.get(opts, res => {
+                if (res.statusCode === 404) { res.resume(); return resolve([]); }
+                if (res.statusCode === 401) { res.resume(); return reject(new Error('HIBP API key required (set HIBP_API_KEY)')); }
+                if (res.statusCode === 429) { res.resume(); return reject(new Error('HIBP rate limited')); }
+                if (res.statusCode >= 400) { res.resume(); return reject(new Error(`HIBP HTTP ${res.statusCode}`)); }
                 let data = '';
                 res.on('data', chunk => { data += chunk; });
                 res.on('end', () => {
                     try { resolve(JSON.parse(data)); } catch { resolve([]); }
                 });
-            }).on('error', reject);
+            });
+            req.on('error', reject);
+            req.on('timeout', () => { req.destroy(); reject(new Error('HIBP timeout')); });
         });
     }
 

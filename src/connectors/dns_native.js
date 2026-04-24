@@ -116,10 +116,13 @@ export class DnsNativeConnector extends BaseConnector {
                                 confidence: 0.95
                             });
                             if (rec.hostmaster) {
-                                const email = rec.hostmaster.replace(/\.([^.]+)$/, '@$1').replace('.', '@').replace(/@(.*)/, (_, rest) => '@' + rest.replace(/@/g, '.'));
+                                const parts = rec.hostmaster.split('.');
+                                const email = parts.length >= 2
+                                    ? parts[0] + '@' + parts.slice(1).join('.')
+                                    : rec.hostmaster;
                                 entities.push({
                                     type: 'email',
-                                    data: { address: rec.hostmaster.replace(/^(\w+)\./, '$1@'), source: 'soa_hostmaster' },
+                                    data: { address: email, source: 'soa_hostmaster' },
                                     confidence: 0.5
                                 });
                             }

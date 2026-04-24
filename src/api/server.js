@@ -132,8 +132,8 @@ const server = createServer(async (req, res) => {
             const reportMatch = path.match(/^\/api\/investigation\/([^/]+)\/report$/);
             if (reportMatch && method === 'GET') {
                 const format = url.searchParams.get('format') || 'json';
-                const path = await engine.reporter.generate(reportMatch[1], format);
-                const content = readFileSync(path, 'utf-8');
+                const reportPath = await engine.reporter.generate(reportMatch[1], format);
+                const content = readFileSync(reportPath, 'utf-8');
                 if (format === 'html') {
                     res.writeHead(200, { 'Content-Type': 'text/html' });
                     return res.end(content);

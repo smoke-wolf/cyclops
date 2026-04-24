@@ -1,10 +1,12 @@
 import { BaseConnector } from './base.js';
 import http from 'http';
+import https from 'https';
 
 export class IpApiConnector extends BaseConnector {
     constructor(config, state, telemetry) {
         super(config, state, telemetry);
         this.name = 'IP-API';
+        this.apiKey = process.env.IP_API_KEY;
     }
 
     async run(investigationId, phaseId, inputType, inputValue) {
@@ -13,7 +15,11 @@ export class IpApiConnector extends BaseConnector {
 
         try {
             const entities = [];
-            const raw = await this._fetch(`http://ip-api.com/json/${encodeURIComponent(inputValue)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query`);
+            const fields = 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query';
+            const url = this.apiKey
+                ? `https://pro.ip-api.com/json/${encodeURIComponent(inputValue)}?key=${this.apiKey}&fields=${fields}`
+                : `http://ip-api.com/json/${encodeURIComponent(inputValue)}?fields=${fields}`;
+            const raw = await this._fetch(url);
             let data;
             try { data = JSON.parse(raw); } catch { throw new Error('ip-api returned invalid JSON'); }
 
@@ -86,8 +92,9 @@ export class IpApiConnector extends BaseConnector {
     }
 
     _fetch(url) {
+        const client = url.startsWith('https') ? https : http;
         return new Promise((resolve, reject) => {
-            const req = http.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 10000 }, res => {
+            const req = client.get(url, { headers: { 'User-Agent': 'cyclops-osint' }, timeout: 10000 }, res => {
                 if (res.statusCode === 429) { reject(new Error('ip-api rate limited')); res.resume(); return; }
                 if (res.statusCode >= 400) { reject(new Error(`ip-api HTTP ${res.statusCode}`)); res.resume(); return; }
                 let data = '';

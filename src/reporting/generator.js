@@ -8,6 +8,10 @@ export class ReportGenerator {
         this.correlator = new Correlator(state);
     }
 
+    _esc(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     async generate(investigationId, format = 'json', outputDir = null) {
         const investigation = this.state.getInvestigation(investigationId);
         const entities = this.state.getEntities(investigationId);
@@ -130,8 +134,8 @@ export class ReportGenerator {
         const entityRows = Object.entries(report.entities).map(([type, items]) => {
             const rows = items.map(e => `
                 <tr>
-                    <td>${type}</td>
-                    <td><code>${JSON.stringify(e.data)}</code></td>
+                    <td>${this._esc(type)}</td>
+                    <td><code>${this._esc(JSON.stringify(e.data))}</code></td>
                     <td>${(e.confidence * 100).toFixed(0)}%</td>
                     <td>${e.sources}</td>
                 </tr>
@@ -144,7 +148,7 @@ export class ReportGenerator {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CYCLOPS — ${report.meta.name}</title>
+<title>CYCLOPS — ${this._esc(report.meta.name)}</title>
 <style>
 :root {
     --bg-0: #08090d; --bg-1: #0f1117; --bg-2: #181a22;
@@ -178,7 +182,7 @@ footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border
 </head>
 <body>
 <h1>CYCLOPS</h1>
-<div class="meta">${report.meta.name} &mdash; ${report.meta.workflow} &mdash; ${report.meta.completed}</div>
+<div class="meta">${this._esc(report.meta.name)} &mdash; ${this._esc(report.meta.workflow)} &mdash; ${this._esc(report.meta.completed)}</div>
 
 <div class="summary">${report.summary.text}</div>
 
@@ -194,7 +198,7 @@ footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border
 <table>
 <thead><tr><th>Type</th><th>Value</th><th>Source</th></tr></thead>
 <tbody>
-${report.knowns.map(k => `<tr><td><span class="badge badge-green">${k.type}</span></td><td>${k.value}</td><td>${k.source}</td></tr>`).join('\n')}
+${report.knowns.map(k => `<tr><td><span class="badge badge-green">${this._esc(k.type)}</span></td><td>${this._esc(k.value)}</td><td>${this._esc(k.source)}</td></tr>`).join('\n')}
 </tbody>
 </table>
 

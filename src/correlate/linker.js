@@ -201,6 +201,9 @@ export class Correlator {
             case 'url': return d.url;
             case 'certificate': return d.subject || d.fingerprint;
             case 'dns_record': return `${d.type} ${d.name}`;
+            case 'repository': return d.name || d.url;
+            case 'organization': return d.name;
+            case 'technology': return d.technologies?.join(', ') || d.url;
             default: return JSON.stringify(d).slice(0, 50);
         }
     }
