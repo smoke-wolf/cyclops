@@ -34,7 +34,7 @@ canvas { display: block; width: 100vw; height: calc(100vh - 48px); margin-top: 4
 </head>
 <body>
 <div class="toolbar">
-    <span class="logo">CYCLOPS</span>
+    <a href="/" class="logo" style="text-decoration:none">CYCLOPS</a>
     <select id="investigation-select"><option value="">Select investigation...</option></select>
     <button class="btn" onclick="loadGraph()">Load</button>
     <label style="color:var(--text-2);font-size:11px"><input type="checkbox" id="show-labels" checked> Labels</label>
@@ -303,7 +303,13 @@ canvas.addEventListener('wheel', e => {
     camera.zoom = Math.max(0.1, Math.min(10, camera.zoom * factor));
 });
 
-loadInvestigations();
+loadInvestigations().then(() => {
+    const urlId = new URLSearchParams(window.location.search).get('id');
+    if (urlId) {
+        document.getElementById('investigation-select').value = urlId;
+        loadGraph();
+    }
+});
 requestAnimationFrame(draw);
 </script>
 </body>
