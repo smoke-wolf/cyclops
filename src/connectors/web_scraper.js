@@ -69,16 +69,22 @@ export class WebScraperConnector extends BaseConnector {
                 }
             }
 
-            const phoneRegex = /(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}/g;
-            for (const match of html.matchAll(phoneRegex)) {
+            const phoneRegex = /(?:\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
+            const bodyText = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
+            const seenPhones = new Set();
+            for (const match of bodyText.matchAll(phoneRegex)) {
                 const phone = match[0].replace(/[-.\s()]/g, '');
-                if (phone.length >= 10 && phone.length <= 15) {
-                    entities.push({
-                        type: 'phone',
-                        data: { number: phone, source: `web_scrape:${inputValue}` },
-                        confidence: 0.5
-                    });
-                }
+                if (phone.length < 10 || phone.length > 15) continue;
+                if (/^0{3,}|^1234|^0123|^9999/.test(phone)) continue;
+                if (seenPhones.has(phone)) continue;
+                seenPhones.add(phone);
+                const context = bodyText.slice(Math.max(0, match.index - 100), match.index + match[0].length + 100);
+                const phoneContext = /phone|tel|call|contact|mobile|fax|whatsapp/i.test(context);
+                entities.push({
+                    type: 'phone',
+                    data: { number: phone, source: `web_scrape:${inputValue}`, in_phone_context: phoneContext },
+                    confidence: phoneContext ? 0.7 : 0.3
+                });
             }
 
             const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
