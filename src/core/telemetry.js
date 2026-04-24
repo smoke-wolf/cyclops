@@ -41,6 +41,7 @@ export class Telemetry {
             phaseId,
             status: result.status,
             entitiesFound: result.entitiesFound || 0,
+            input: result.input,
             duration,
             timestamp: Date.now()
         };

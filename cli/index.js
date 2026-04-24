@@ -113,7 +113,8 @@ class LiveTracker {
                 if (event.status === 'completed') this.completedConnectors++;
                 else this.failedConnectors++;
                 if (event.entitiesFound > 0) {
-                    this._log(`${G}+${event.entitiesFound}${RST} via ${P}${event.connector}${RST} ${DIM}(${event.input?.value || ''})${RST}`);
+                    const inputStr = event.input?.value ? ` ${DIM}(${trunc(event.input.value, 30)})${RST}` : '';
+                    this._log(`${G}+${event.entitiesFound}${RST} via ${P}${event.connector}${RST}${inputStr}`);
                 }
                 break;
             case 'entity_new':
@@ -289,7 +290,20 @@ function printEntityTable(entities, opts = {}) {
 
 function primaryValue(entity) {
     const d = entity.data || {};
-    const candidates = ['address', 'name', 'url', 'username', 'number', 'platform', 'value'];
+    if (entity.type === 'account' && d.platform && d.username) return trunc(`${d.platform}/${d.username}`, 60);
+    if (entity.type === 'account' && d.platform) return trunc(`${d.platform}${d.url ? ' ' + d.url : ''}`, 60);
+    if (entity.type === 'repository' && d.name) return trunc(d.name, 60);
+    if (entity.type === 'person' && d.name) return trunc(d.name, 60);
+    if (entity.type === 'email' && d.address) return trunc(d.address, 60);
+    if (entity.type === 'domain' && d.name) return trunc(d.name, 60);
+    if (entity.type === 'subdomain' && d.name) return trunc(d.name, 60);
+    if (entity.type === 'ip' && d.address) return trunc(d.address, 60);
+    if (entity.type === 'phone' && d.number) return trunc(d.number, 60);
+    if (entity.type === 'url' && d.url) return trunc(d.url, 60);
+    if (entity.type === 'certificate' && d.subject) return trunc(d.subject, 60);
+    if (entity.type === 'breach' && d.name) return trunc(d.name, 60);
+    if (entity.type === 'technology' && d.url) return trunc(d.url, 60);
+    const candidates = ['address', 'name', 'url', 'username', 'number', 'value'];
     for (const k of candidates) {
         if (d[k]) return trunc(String(d[k]), 60);
     }
@@ -385,13 +399,28 @@ async function runInvestigation(target, opts = {}) {
         const entities = engine.state.getEntities(id);
         const highConf = entities.filter(e => e.confidence >= 0.8);
         if (highConf.length) {
-            divider('HIGH CONFIDENCE');
+            const typePriority = { person: 0, account: 1, email: 2, phone: 3, domain: 4, subdomain: 5, ip: 6, breach: 7, credential: 8, organization: 9, url: 10, technology: 11, certificate: 12, dns_record: 13, repository: 14, port: 15 };
+            const sorted = [...highConf].sort((a, b) => (typePriority[a.type] ?? 99) - (typePriority[b.type] ?? 99) || b.confidence - a.confidence);
+            const repoCount = sorted.filter(e => e.type === 'repository').length;
+            const shown = [];
+            let reposShown = 0;
+            for (const e of sorted) {
+                if (e.type === 'repository') {
+                    if (reposShown >= 3) continue;
+                    reposShown++;
+                }
+                shown.push(e);
+                if (shown.length >= 15) break;
+            }
+
+            divider('KEY FINDINGS');
             console.log();
-            for (const e of highConf.slice(0, 15)) {
+            for (const e of shown) {
                 const src = e.source_count > 1 ? ` ${Y}(${e.source_count} sources)${RST}` : '';
                 console.log(`  ${confBadge(e.confidence)} ${C}${e.type}${RST} ${primaryValue(e)}${src}`);
             }
-            if (highConf.length > 15) console.log(`  ${DIM}... and ${highConf.length - 15} more${RST}`);
+            const remaining = highConf.length - shown.length;
+            if (remaining > 0) console.log(`  ${DIM}... and ${remaining} more (${repoCount > 3 ? `${repoCount - 3} repos, ` : ''}use entities command to browse)${RST}`);
             console.log();
         }
 
