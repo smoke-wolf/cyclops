@@ -865,3 +865,8 @@ program
     });
 
 program.parse();
+
+if (process.argv.length <= 2) {
+    banner();
+    program.outputHelp();
+}

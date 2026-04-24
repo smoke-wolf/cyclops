@@ -1,6 +1,12 @@
 <p align="center">
   <h1 align="center">CYCLOPS</h1>
   <p align="center">Unified OSINT targeting pipeline. 25 connectors. Entity graph. Auto-correlation. One command.</p>
+  <p align="center">
+    <a href="https://github.com/smoke-wolf/cyclops/actions"><img src="https://github.com/smoke-wolf/cyclops/actions/workflows/test.yml/badge.svg" alt="tests"></a>
+    <img src="https://img.shields.io/badge/connectors-25-blue" alt="25 connectors">
+    <img src="https://img.shields.io/badge/node-%3E%3D20-green" alt="node >= 20">
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license"></a>
+  </p>
 </p>
 
 <p align="center">
