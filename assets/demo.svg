@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="496" viewBox="0 0 760 496">
+<defs><style>text { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, monospace; font-size: 14px; }</style></defs>
+<rect width="760" height="496" rx="10" fill="#0d1117"/>
+<rect width="760" height="36" rx="10" fill="#161b22"/>
+<rect x="0" y="26" width="760" height="10" fill="#161b22"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="18" r="6" fill="#febc2e"/>
+<circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text x="380" y="22" fill="#6e7681" text-anchor="middle" font-size="13">cyclops smoke-wolf</text>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.0000;0.0000;0.0258;0.0258;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#6e7681" font-weight="normal">$ </tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.0258;0.0258;0.0774;0.0774;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#6e7681" font-weight="normal">$ cyclops </tspan></text>
+<text y="86"><tspan x="20" fill="#ffffff" font-weight="bold">smoke-wolf</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.0774;0.0774;0.1290;0.1290;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#6e7681" font-weight="normal">$ cyclops smoke-wolf</tspan></text>
+<text y="86"></text>
+<text y="106"><tspan x="20" fill="#ff7b72" font-weight="normal">   ██████╗██╗   ██╗ ██████╗██╗      ██████╗ ██████╗ ███████╗</tspan></text>
+<text y="126"><tspan x="20" fill="#ff7b72" font-weight="normal">  ██╔════╝╚██╗ ██╔╝██╔════╝██║     ██╔═══██╗██╔══██╗██╔════╝</tspan></text>
+<text y="146"><tspan x="20" fill="#ff7b72" font-weight="normal">  ██║      ╚████╔╝ ██║     ██║     ██║   ██║██████╔╝███████╗</tspan></text>
+<text y="166"><tspan x="20" fill="#ff7b72" font-weight="normal">  ██║       ╚██╔╝  ██║     ██║     ██║   ██║██╔═══╝ ╚════██║</tspan></text>
+<text y="186"><tspan x="20" fill="#ff7b72" font-weight="normal">  ╚██████╗   ██║   ╚██████╗███████╗╚██████╔╝██║     ███████║</tspan></text>
+<text y="206"><tspan x="20" fill="#ff7b72" font-weight="normal">   ╚═════╝   ╚═╝    ╚═════╝╚══════╝ ╚═════╝ ╚═╝     ╚══════╝</tspan></text>
+<text y="226"><tspan x="20" fill="#6e7681" font-weight="normal">  Unified OSINT Targeting Pipeline</tspan></text>
+<text y="246"></text>
+<text y="266"><tspan x="20" fill="#ffffff" font-weight="normal">  Target:   smoke-wolf</tspan></text>
+<text y="286"><tspan x="20" fill="#ffffff" font-weight="normal">  Type:     </tspan><tspan x="135.2" fill="#a5d6ff" font-weight="normal">username</tspan><tspan x="212" fill="#6e7681" font-weight="normal"> (auto-detected)</tspan></text>
+<text y="306"><tspan x="20" fill="#ffffff" font-weight="normal">  Workflow: username_trace </tspan><tspan x="279.2" fill="#6e7681" font-weight="normal">(5 phases)</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.1290;0.1290;0.2903;0.2903;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#6e7681" font-weight="normal">$ cyclops smoke-wolf</tspan></text>
+<text y="86"></text>
+<text y="106"><tspan x="20" fill="#ff7b72" font-weight="normal">  ▲ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">Starting...</tspan></text>
+<text y="126"></text>
+<text y="146"><tspan x="20" fill="#ff7b72" font-weight="normal">  ⠙ </tspan><tspan x="58.4" fill="#ffffff" font-weight="bold">smoke-wolf</tspan><tspan x="154.4" fill="#6e7681" font-weight="normal">  username_trace  2s</tspan></text>
+<text y="166"></text>
+<text y="186"><tspan x="20" fill="#ffffff" font-weight="normal">  0 entities  0 connectors  0/5 phases</tspan></text>
+<text y="206"><tspan x="20" fill="#6e7681" font-weight="normal">  ░░░░░  </tspan><tspan x="106.39999999999999" fill="#6e7681" font-weight="normal">[GitHub, Sherlock, Maigret]</tspan></text>
+<text y="226"></text>
+<text y="246"><tspan x="20" fill="#e3b341" font-weight="normal">  ◆ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">phase </tspan><tspan x="116" fill="#ffffff" font-weight="bold">platform_search</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.2903;0.2903;0.4516;0.4516;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#ff7b72" font-weight="normal">  ⠹ </tspan><tspan x="58.4" fill="#ffffff" font-weight="bold">smoke-wolf</tspan><tspan x="154.4" fill="#6e7681" font-weight="normal">  username_trace  8s</tspan></text>
+<text y="86"></text>
+<text y="106"><tspan x="20" fill="#ffffff" font-weight="normal">  32 entities  4 connectors  1/5 phases</tspan></text>
+<text y="126"><tspan x="20" fill="#7ee787" font-weight="normal">  █</tspan><tspan x="48.8" fill="#e3b341" font-weight="normal">▓</tspan><tspan x="58.4" fill="#6e7681" font-weight="normal">░░░  </tspan><tspan x="106.4" fill="#6e7681" font-weight="normal">[WebScraper, DNS-Native]</tspan></text>
+<text y="146"><tspan x="20" fill="#ffffff" font-weight="normal">  account:</tspan><tspan x="116" fill="#ffffff" font-weight="bold">1</tspan><tspan x="125.6" fill="#ffffff" font-weight="normal"> repository:</tspan><tspan x="240.79999999999998" fill="#ffffff" font-weight="bold">29</tspan><tspan x="260" fill="#ffffff" font-weight="normal"> person:</tspan><tspan x="336.8" fill="#ffffff" font-weight="bold">1</tspan><tspan x="346.40000000000003" fill="#ffffff" font-weight="normal"> email:</tspan><tspan x="413.6" fill="#ffffff" font-weight="bold">1</tspan></text>
+<text y="166"></text>
+<text y="186"><tspan x="20" fill="#7ee787" font-weight="normal">  +29</tspan><tspan x="68" fill="#ffffff" font-weight="normal"> via </tspan><tspan x="116" fill="#d2a8ff" font-weight="normal">GitHub</tspan><tspan x="173.6" fill="#6e7681" font-weight="normal"> (smoke-wolf)</tspan></text>
+<text y="206"><tspan x="20" fill="#7ee787" font-weight="normal">  +1</tspan><tspan x="58.4" fill="#ffffff" font-weight="normal"> via </tspan><tspan x="106.4" fill="#d2a8ff" font-weight="normal">Sherlock</tspan><tspan x="183.2" fill="#6e7681" font-weight="normal"> (smoke-wolf)</tspan></text>
+<text y="226"><tspan x="20" fill="#e3b341" font-weight="normal">  ◆ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">phase </tspan><tspan x="116" fill="#ffffff" font-weight="bold">profile_scrape</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.4516;0.4516;0.5806;0.5806;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"><tspan x="20" fill="#ff7b72" font-weight="normal">  ⠴ </tspan><tspan x="58.4" fill="#ffffff" font-weight="bold">smoke-wolf</tspan><tspan x="154.4" fill="#6e7681" font-weight="normal">  username_trace  24s</tspan></text>
+<text y="86"></text>
+<text y="106"><tspan x="20" fill="#ffffff" font-weight="normal">  53 entities  8 connectors  3/5 phases</tspan></text>
+<text y="126"><tspan x="20" fill="#7ee787" font-weight="normal">  ███</tspan><tspan x="68" fill="#e3b341" font-weight="normal">▓</tspan><tspan x="77.6" fill="#6e7681" font-weight="normal">░  </tspan><tspan x="106.39999999999999" fill="#6e7681" font-weight="normal">[idle]</tspan></text>
+<text y="146"><tspan x="20" fill="#ffffff" font-weight="normal">  repository:</tspan><tspan x="144.8" fill="#ffffff" font-weight="bold">29</tspan><tspan x="164" fill="#ffffff" font-weight="normal"> domain:</tspan><tspan x="240.8" fill="#ffffff" font-weight="bold">9</tspan><tspan x="250.4" fill="#ffffff" font-weight="normal"> url:</tspan><tspan x="298.4" fill="#ffffff" font-weight="bold">7</tspan><tspan x="308" fill="#ffffff" font-weight="normal"> account:</tspan><tspan x="394.4" fill="#ffffff" font-weight="bold">3</tspan><tspan x="404" fill="#ffffff" font-weight="normal"> phone:</tspan><tspan x="471.2" fill="#ffffff" font-weight="bold">2</tspan><tspan x="480.8" fill="#ffffff" font-weight="normal"> technology:</tspan><tspan x="596" fill="#ffffff" font-weight="bold">2</tspan></text>
+<text y="166"></text>
+<text y="186"><tspan x="20" fill="#7ee787" font-weight="normal">  +8</tspan><tspan x="58.4" fill="#ffffff" font-weight="normal"> via </tspan><tspan x="106.4" fill="#d2a8ff" font-weight="normal">WebScraper</tspan><tspan x="202.4" fill="#6e7681" font-weight="normal"> (smoke-wolf.dev)</tspan></text>
+<text y="206"><tspan x="20" fill="#7ee787" font-weight="normal">  +9</tspan><tspan x="58.4" fill="#ffffff" font-weight="normal"> via </tspan><tspan x="106.4" fill="#d2a8ff" font-weight="normal">DNS-Native</tspan><tspan x="202.4" fill="#6e7681" font-weight="normal"> (smoke-wolf.dev)</tspan></text>
+<text y="226"><tspan x="20" fill="#e3b341" font-weight="normal">  ◆ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">phase </tspan><tspan x="116" fill="#ffffff" font-weight="bold">correlation</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5806;0.5806;0.7419;0.7419;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"></text>
+<text y="86"><tspan x="20" fill="#6e7681" font-weight="normal">── COMPLETE ─────────────────────────────────────────────</tspan></text>
+<text y="106"></text>
+<text y="126"><tspan x="20" fill="#7ee787" font-weight="normal">  ▲ </tspan><tspan x="58.4" fill="#ffffff" font-weight="bold">smoke-wolf</tspan><tspan x="154.4" fill="#6e7681" font-weight="normal">  f5aa2633</tspan></text>
+<text y="146"><tspan x="20" fill="#6e7681" font-weight="normal">  username_trace — 42.1s</tspan></text>
+<text y="166"></text>
+<text y="186"><tspan x="20" fill="#ffffff" font-weight="normal">  53 entities  35 links  8 connectors  5 phases</tspan></text>
+<text y="206"></text>
+<text y="226"><tspan x="20" fill="#ffffff" font-weight="normal">  repository      29   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">████████████████████████</tspan></text>
+<text y="246"><tspan x="20" fill="#ffffff" font-weight="normal">  domain           9   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">███████</tspan></text>
+<text y="266"><tspan x="20" fill="#ffffff" font-weight="normal">  url              7   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">██████</tspan></text>
+<text y="286"><tspan x="20" fill="#ffffff" font-weight="normal">  account          3   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">██</tspan></text>
+<text y="306"><tspan x="20" fill="#ffffff" font-weight="normal">  phone            2   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">██</tspan></text>
+<text y="326"><tspan x="20" fill="#ffffff" font-weight="normal">  technology       2   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">██</tspan></text>
+<text y="346"><tspan x="20" fill="#ffffff" font-weight="normal">  person           1   </tspan><tspan x="240.79999999999998" fill="#7ee787" font-weight="normal">█</tspan></text>
+<text y="366"></text>
+<text y="386"><tspan x="20" fill="#7ee787" font-weight="normal">  ✔ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">platform_search            </tspan><tspan x="317.59999999999997" fill="#7ee787" font-weight="normal">+40</tspan></text>
+<text y="406"><tspan x="20" fill="#7ee787" font-weight="normal">  ✔ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">profile_scrape             </tspan><tspan x="317.59999999999997" fill="#7ee787" font-weight="normal">+13</tspan></text>
+<text y="426"><tspan x="20" fill="#7ee787" font-weight="normal">  ✔ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">identity_pivot             </tspan><tspan x="317.59999999999997" fill="#6e7681" font-weight="normal">+0</tspan></text>
+<text y="446"><tspan x="20" fill="#7ee787" font-weight="normal">  ✔ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">correlation                </tspan><tspan x="317.59999999999997" fill="#6e7681" font-weight="normal">+0</tspan></text>
+<text y="466"><tspan x="20" fill="#7ee787" font-weight="normal">  ✔ </tspan><tspan x="58.4" fill="#ffffff" font-weight="normal">reporting                  </tspan><tspan x="317.59999999999997" fill="#6e7681" font-weight="normal">+0</tspan></text>
+</g>
+<g opacity="0">
+<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.7419;0.7419;1.0000;1.0000;1" dur="15.5s" repeatCount="indefinite"/>
+<text y="66"></text>
+<text y="86"><tspan x="20" fill="#6e7681" font-weight="normal">── HIGH CONFIDENCE ──────────────────────────────────────</tspan></text>
+<text y="106"></text>
+<text y="126"><tspan x="20" fill="#7ee787" font-weight="normal">  95%</tspan><tspan x="68" fill="#a5d6ff" font-weight="normal"> account </tspan><tspan x="154.39999999999998" fill="#ffffff" font-weight="normal">GitHub/smoke-wolf </tspan><tspan x="327.19999999999993" fill="#e3b341" font-weight="normal">(2 sources)</tspan></text>
+<text y="146"><tspan x="20" fill="#7ee787" font-weight="normal">  90%</tspan><tspan x="68" fill="#a5d6ff" font-weight="normal"> person  </tspan><tspan x="154.39999999999998" fill="#ffffff" font-weight="normal">Maliq Barnard</tspan></text>
+<text y="166"><tspan x="20" fill="#7ee787" font-weight="normal">  90%</tspan><tspan x="68" fill="#a5d6ff" font-weight="normal"> email   </tspan><tspan x="154.39999999999998" fill="#ffffff" font-weight="normal">smoke@example.com </tspan><tspan x="327.19999999999993" fill="#6e7681" font-weight="normal">(github_commit)</tspan></text>
+<text y="186"><tspan x="20" fill="#7ee787" font-weight="normal">  85%</tspan><tspan x="68" fill="#a5d6ff" font-weight="normal"> account </tspan><tspan x="154.39999999999998" fill="#ffffff" font-weight="normal">Twitter/smokewolf</tspan></text>
+<text y="206"><tspan x="20" fill="#7ee787" font-weight="normal">  80%</tspan><tspan x="68" fill="#a5d6ff" font-weight="normal"> domain  </tspan><tspan x="154.39999999999998" fill="#ffffff" font-weight="normal">smoke-wolf.dev</tspan></text>
+<text y="226"></text>
+<text y="246"><tspan x="20" fill="#6e7681" font-weight="normal">  View all: cyclops entities f5aa2633</tspan></text>
+<text y="266"><tspan x="20" fill="#6e7681" font-weight="normal">  Graph:    cyclops graph f5aa2633</tspan></text>
+<text y="286"></text>
+</g>
+</svg>

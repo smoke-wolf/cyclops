@@ -297,91 +297,140 @@ function primaryValue(entity) {
     return vals.length ? trunc(vals[0], 60) : `${DIM}(no data)${RST}`;
 }
 
+// ─── INPUT DETECTION ────────────────────────────────────────────────────
+
+function detectType(value) {
+    if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(value)) return 'email';
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(value)) return 'ip';
+    if (/^[0-9a-f:]+$/.test(value) && value.includes(':')) return 'ip';
+    if (/^https?:\/\//i.test(value)) return 'url';
+    if (/^\+?\d[\d\s()-]{6,}$/.test(value)) return 'phone';
+    if (/^[a-z0-9]([a-z0-9-]*\.)+[a-z]{2,}$/i.test(value)) return 'domain';
+    return 'username';
+}
+
+function pickWorkflow(type) {
+    const map = {
+        username: 'username_trace',
+        email: 'person_full',
+        domain: 'domain_recon',
+        ip: 'domain_recon',
+        url: 'domain_recon',
+        phone: 'person_full',
+        name: 'person_full',
+    };
+    return map[type] || 'quick_recon';
+}
+
 // ─── COMMANDS ────────────────────────────────────────────────────────────
 
 const program = new Command();
-program.name('cyclops').description('Unified OSINT targeting pipeline').version('0.1.0');
+program.name('cyclops').description('Unified OSINT targeting pipeline').version('1.0.0');
 
-program
-    .command('investigate')
-    .description('Launch a new investigation')
-    .requiredOption('-n, --name <name>', 'Investigation name')
-    .option('-w, --workflow <workflow>', 'Workflow to use', 'person_full')
-    .option('-k, --known <knowns...>', 'Known inputs (type:value)')
-    .option('--format <format>', 'Report format', 'json')
-    .option('-q, --quiet', 'Minimal output')
-    .action(async (opts) => {
-        if (!opts.quiet) banner();
-        const engine = new Engine(DB_PATH);
+async function runInvestigation(target, opts = {}) {
+    const type = opts.type || detectType(target);
+    const workflow = opts.workflow || pickWorkflow(type);
+    const format = opts.format || 'json';
+    const quiet = opts.quiet || false;
 
-        const knowns = (opts.known || []).map(k => {
-            const [type, ...rest] = k.split(':');
-            return { type, value: rest.join(':') };
-        });
+    if (!quiet) banner();
+    const engine = new Engine(DB_PATH);
 
-        if (!knowns.length) {
-            console.log(`${R}✗${RST} At least one --known required (e.g. --known username:johndoe)`);
-            process.exit(1);
+    const knowns = [{ type, value: target }];
+    if (opts.known) {
+        for (const k of opts.known) {
+            const [t, ...rest] = k.split(':');
+            knowns.push({ type: t, value: rest.join(':') });
         }
+    }
 
-        // Show workflow info
-        const wfConfig = JSON.parse(readFileSync(join(__dirname, '..', 'config', 'workflows.json'), 'utf-8'));
-        const wf = wfConfig.workflows[opts.workflow];
-        if (!wf) {
-            console.log(`${R}✗${RST} Unknown workflow: ${opts.workflow}`);
-            console.log(`  Available: ${Object.keys(wfConfig.workflows).join(', ')}`);
-            process.exit(1);
-        }
+    const wfConfig = JSON.parse(readFileSync(join(__dirname, '..', 'config', 'workflows.json'), 'utf-8'));
+    const wf = wfConfig.workflows[workflow];
+    if (!wf) {
+        console.log(`${R}✗${RST} Unknown workflow: ${workflow}`);
+        console.log(`  Available: ${Object.keys(wfConfig.workflows).join(', ')}`);
+        engine.close();
+        process.exit(1);
+    }
 
-        console.log(`  ${BOLD}Target:${RST}   ${opts.name}`);
-        console.log(`  ${BOLD}Workflow:${RST} ${opts.workflow} ${DIM}(${wf.phases.length} phases)${RST}`);
-        console.log(`  ${BOLD}Knowns:${RST}`);
-        for (const k of knowns) {
+    console.log(`  ${BOLD}Target:${RST}   ${target}`);
+    console.log(`  ${BOLD}Type:${RST}     ${C}${type}${RST} ${opts.type ? '' : `${DIM}(auto-detected)${RST}`}`);
+    console.log(`  ${BOLD}Workflow:${RST} ${workflow} ${DIM}(${wf.phases.length} phases)${RST}`);
+    if (knowns.length > 1) {
+        console.log(`  ${BOLD}Extra knowns:${RST}`);
+        for (const k of knowns.slice(1)) {
             console.log(`    ${C}${k.type}${RST} ${k.value}`);
         }
+    }
 
-        const tracker = new LiveTracker(engine, null, opts.name, opts.workflow);
+    const tracker = new LiveTracker(engine, null, target, workflow);
 
-        engine.telemetry.onEvent(event => {
-            tracker.onEvent(event);
-        });
+    engine.telemetry.onEvent(event => {
+        tracker.onEvent(event);
+    });
 
-        console.log(`\n  ${R}▲${RST} Starting...\n`);
-        tracker.start();
+    console.log(`\n  ${R}▲${RST} Starting...\n`);
+    tracker.start();
 
-        try {
-            const id = await engine.investigate(opts.name, knowns, opts.workflow);
-            tracker.id = id;
-            const stats = engine.state.getStats(id);
-            tracker.stop();
-            tracker.printSummary(stats);
+    try {
+        const id = await engine.investigate(target, knowns, workflow);
+        tracker.id = id;
+        const stats = engine.state.getStats(id);
+        tracker.stop();
+        tracker.printSummary(stats);
 
-            const reportPath = await engine.reporter.generate(id, opts.format);
-            console.log(`  ${BOLD}Report:${RST} ${reportPath}`);
+        const reportPath = await engine.reporter.generate(id, format);
+        console.log(`  ${BOLD}Report:${RST} ${reportPath}`);
 
-            // High-confidence highlights
-            const entities = engine.state.getEntities(id);
-            const highConf = entities.filter(e => e.confidence >= 0.8);
-            if (highConf.length) {
-                divider('HIGH CONFIDENCE');
-                console.log();
-                for (const e of highConf.slice(0, 15)) {
-                    const src = e.source_count > 1 ? ` ${Y}(${e.source_count} sources)${RST}` : '';
-                    console.log(`  ${confBadge(e.confidence)} ${C}${e.type}${RST} ${primaryValue(e)}${src}`);
-                }
-                if (highConf.length > 15) console.log(`  ${DIM}... and ${highConf.length - 15} more${RST}`);
-                console.log();
-            }
-
-            console.log(`  ${DIM}View all: cyclops entities ${id}${RST}`);
-            console.log(`  ${DIM}Graph:    cyclops graph ${id}${RST}`);
+        const entities = engine.state.getEntities(id);
+        const highConf = entities.filter(e => e.confidence >= 0.8);
+        if (highConf.length) {
+            divider('HIGH CONFIDENCE');
             console.log();
-        } catch (e) {
-            tracker.stop();
-            console.log(`\n${R}✗ Investigation failed:${RST} ${e.message}`);
-        } finally {
-            engine.close();
+            for (const e of highConf.slice(0, 15)) {
+                const src = e.source_count > 1 ? ` ${Y}(${e.source_count} sources)${RST}` : '';
+                console.log(`  ${confBadge(e.confidence)} ${C}${e.type}${RST} ${primaryValue(e)}${src}`);
+            }
+            if (highConf.length > 15) console.log(`  ${DIM}... and ${highConf.length - 15} more${RST}`);
+            console.log();
         }
+
+        console.log(`  ${DIM}View all: cyclops entities ${id}${RST}`);
+        console.log(`  ${DIM}Graph:    cyclops graph ${id}${RST}`);
+        console.log();
+    } catch (e) {
+        tracker.stop();
+        console.log(`\n${R}✗ Investigation failed:${RST} ${e.message}`);
+    } finally {
+        engine.close();
+    }
+}
+
+// Default command — `cyclops <target>` just works
+program
+    .argument('[target]', 'Target to investigate (auto-detects type)')
+    .option('-t, --type <type>', 'Override input type (username, email, domain, ip, url, phone)')
+    .option('-w, --workflow <workflow>', 'Override workflow')
+    .option('-k, --known <knowns...>', 'Extra knowns (type:value)')
+    .option('--format <format>', 'Report format', 'json')
+    .option('-q, --quiet', 'Minimal output')
+    .action(async (target, opts, cmd) => {
+        if (!target) return;
+        if (cmd.args.length === 1 && !program.commands.some(c => c.name() === target)) {
+            await runInvestigation(target, opts);
+        }
+    });
+
+program
+    .command('investigate <target>')
+    .description('Launch a new investigation')
+    .option('-t, --type <type>', 'Override input type')
+    .option('-w, --workflow <workflow>', 'Override workflow')
+    .option('-k, --known <knowns...>', 'Extra knowns (type:value)')
+    .option('--format <format>', 'Report format', 'json')
+    .option('-q, --quiet', 'Minimal output')
+    .action(async (target, opts) => {
+        await runInvestigation(target, opts);
     });
 
 program

@@ -1,19 +1,45 @@
-# CYCLOPS
+<p align="center">
+  <h1 align="center">CYCLOPS</h1>
+  <p align="center">Unified OSINT targeting pipeline. 25 connectors. Entity graph. Auto-correlation. One command.</p>
+</p>
 
-Unified OSINT targeting pipeline. Config-driven orchestration across 25 connectors in parallel — entity graph correlation, fuzzy matching, multi-source confidence scoring, and autonomous report generation.
+<p align="center">
+  <img src="assets/demo.svg" alt="cyclops demo" width="760">
+</p>
 
-Enter knowns. Get intelligence.
-
-![investigation](assets/investigate.svg)
-
-## Quick Start
+## Install
 
 ```bash
-npm install
-cyclops investigate john_doe -t username -w username_trace --known email:john@example.com
+# Clone and install
+git clone https://github.com/smoke-wolf/cyclops.git
+cd cyclops && npm install
+
+# Or run directly with npx
+npx cyclops-osint smoke-wolf
 ```
 
-That's it. CYCLOPS fans out across every available connector, builds an entity graph, correlates across sources, and generates a report.
+## Usage
+
+```bash
+# That's it. Auto-detects type, picks workflow, runs everything.
+cyclops smoke-wolf
+
+# Email → person_full workflow
+cyclops john@example.com
+
+# Domain → domain_recon workflow
+cyclops example.com
+
+# IP → domain_recon workflow
+cyclops 8.8.8.8
+
+# Override anything
+cyclops target -t username -w person_full -k email:john@example.com
+```
+
+CYCLOPS auto-detects the input type (username, email, domain, IP, URL, phone), picks the right workflow, fans out across every available connector in parallel, builds an entity graph, correlates across sources, and generates a report. Zero config needed.
+
+![investigation](assets/investigate.svg)
 
 ## CLI
 
@@ -21,7 +47,8 @@ That's it. CYCLOPS fans out across every available connector, builds an entity g
 
 | Command | Description |
 |---------|-------------|
-| `investigate <name> -t <type> -w <workflow>` | Run investigation with live progress |
+| `cyclops <target>` | Investigate (auto-detect type + workflow) |
+| `investigate <target>` | Same, explicit subcommand |
 | `list` | All investigations with status |
 | `status <id>` | Full investigation breakdown |
 | `entities <id>` | Browse, search, filter entities |
@@ -36,23 +63,23 @@ That's it. CYCLOPS fans out across every available connector, builds an entity g
 ## Architecture
 
 ```
-CLI / API ──▶ Engine (DAG) ──▶ Connectors (25) ──▶ External OSINT Sources
-                  │                    │
-            Correlator            Telemetry
-            (linking,             (SSE, WS,
-             scoring)              SQLite)
-                  │
-             Reporter
-           (JSON, HTML, MD)
+Target ──▶ Auto-Detect ──▶ Engine (DAG) ──▶ Connectors (25) ──▶ OSINT Sources
+                               │                    │
+                         Correlator            Telemetry
+                         (fuzzy match,         (SSE, WS,
+                          confidence)           SQLite)
+                               │
+                          Reporter
+                        (JSON, HTML, MD)
 ```
 
-The engine resolves workflow phases as a DAG — connectors within each phase run in parallel, and each phase's output feeds the next as input. Entity dedup uses SHA-256 fingerprinting. Correlation uses Levenshtein fuzzy matching with configurable thresholds. Multi-source corroboration boosts confidence scores.
+Workflow phases resolve as a DAG — connectors within each phase run in parallel, output feeds the next phase. Entity dedup via SHA-256 fingerprinting. Correlation via Levenshtein fuzzy matching with configurable thresholds. Multi-source corroboration boosts confidence.
 
 ## Connectors
 
 ![connectors](assets/connectors.svg)
 
-### Native (9) — zero dependencies, always available
+### Native (9) — zero dependencies
 
 | Connector | Accepts | Outputs |
 |-----------|---------|---------|
@@ -87,24 +114,26 @@ The engine resolves workflow phases as a DAG — connectors within each phase ru
 | Nmap | `brew install nmap` |
 | DNSrecon | `pip3 install dnsrecon` |
 
-Health checks run on startup. Failed binaries are silently skipped. Native connectors always run.
+Binary connectors are health-checked on startup — missing tools are silently skipped.
 
 ## Workflows
 
 ![workflows](assets/workflows.svg)
 
-| Workflow | Phases | Description |
-|----------|--------|-------------|
-| `person_full` | 6 | Full person investigation — expansion, breach check, infrastructure, deep profiling, correlation, reporting |
-| `domain_recon` | 6 | Infrastructure + personnel from a domain — subdomains, services, personnel, email enum, correlation, reporting |
-| `username_trace` | 5 | Cross-platform username trace — platform search, profile scrape, identity pivot, correlation, reporting |
-| `quick_recon` | 2 | 60-second surface sweep |
+| Workflow | Phases | Best For |
+|----------|--------|----------|
+| `username_trace` | 5 | Usernames — cross-platform search, profile scrape, identity pivot |
+| `person_full` | 6 | Emails/phones — full expansion, breach check, infrastructure, deep profiling |
+| `domain_recon` | 6 | Domains/IPs — subdomains, services, personnel, email enum |
+| `quick_recon` | 2 | Anything — 60-second surface sweep |
+
+Auto-selected based on input type. Override with `-w`.
 
 ## Entity Graph
 
 ![graph](assets/graph.svg)
 
-The correlation engine links entities across connectors using configurable rules and Levenshtein fuzzy matching. Multi-source corroboration automatically boosts confidence.
+Correlation engine links entities across connectors using configurable rules and Levenshtein fuzzy matching. Multi-source corroboration boosts confidence.
 
 **16 entity types:** person, account, email, domain, subdomain, ip, port, certificate, breach, credential, phone, url, dns_record, repository, organization, technology
 
@@ -112,7 +141,13 @@ The correlation engine links entities across connectors using configurable rules
 
 ![entities](assets/entities.svg)
 
-Filter by type, search by value, sort by confidence. Grouped view shows entities by category with inline detail.
+```bash
+cyclops entities <id>                    # grouped view
+cyclops entities <id> --type account     # filter by type
+cyclops entities <id> --high             # confidence > 80%
+cyclops entities <id> --search github    # search data
+cyclops entities <id> --json             # raw JSON
+```
 
 ## API
 
@@ -132,10 +167,10 @@ Filter by type, search by value, sort by confidence. Grouped view shows entities
 
 ## Configuration
 
-All behavior is config-driven. No code changes needed.
+All behavior is config-driven:
 
 - `config/connectors.json` — connector definitions, timeouts, input caps
-- `config/workflows.json` — workflow phases, dependencies, connector assignments
+- `config/workflows.json` — workflow phases, DAG dependencies, connector assignments
 - `config/correlation.json` — entity types, linking rules, scoring thresholds
 
 ## API Keys (Optional)
@@ -154,11 +189,10 @@ export EMAILREP_API_KEY=...
 ![tests](assets/tests.svg)
 
 ```bash
-node test/run.js           # 40 tests: state, registry, correlation, reports, telemetry, live connectors, engine, CLI
-node test/deep_recon.js    # full investigation with telemetry output
+npm test    # 41 tests across all layers
 ```
 
-40 tests covering every layer — state management, connector registry, correlation engine, report generation, telemetry broadcasting, live connector integration (GitHub, DNS, WHOIS, crt.sh, HIBP, WebScraper, Wayback, IP-API, EmailRep), engine workflow execution, and CLI commands.
+41 tests: state management, connector registry, correlation engine, report generation, telemetry, live connectors (GitHub, DNS, WHOIS, crt.sh, HIBP, WebScraper, Wayback, IP-API, EmailRep), engine integration, and CLI.
 
 ## License
 

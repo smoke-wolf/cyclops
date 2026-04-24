@@ -1,20 +1,34 @@
 {
-  "name": "cyclops",
-  "version": "0.1.0",
-  "description": "Unified OSINT targeting pipeline — enter knowns, get intelligence",
+  "name": "cyclops-osint",
+  "version": "1.0.0",
+  "description": "Unified OSINT targeting pipeline — enter a target, get intelligence. 25 connectors, entity graph correlation, auto-reporting.",
   "type": "module",
   "main": "cyclops.js",
   "bin": {
     "cyclops": "./cli/index.js"
   },
   "scripts": {
-    "start": "node cyclops.js",
-    "cli": "node cli/index.js",
+    "start": "node cli/index.js",
+    "test": "node test/run.js",
     "dashboard": "node src/api/server.js",
-    "investigate": "node cli/index.js investigate",
-    "connectors": "node cli/index.js connectors",
-    "db:init": "node db/init.js"
+    "screenshots": "node scripts/generate_screenshots.js"
   },
+  "keywords": [
+    "osint",
+    "intelligence",
+    "reconnaissance",
+    "investigation",
+    "security",
+    "username",
+    "email",
+    "domain",
+    "cli",
+    "graph",
+    "correlation",
+    "breach",
+    "infosec",
+    "recon"
+  ],
   "dependencies": {
     "better-sqlite3": "^11.0.0",
     "ws": "^8.16.0",
@@ -29,5 +43,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/smoke-wolf/cyclops"
-  }
+  },
+  "homepage": "https://github.com/smoke-wolf/cyclops#readme",
+  "author": "smoke-wolf"
 }

@@ -600,14 +600,29 @@ await test('cli: list command', async () => {
     assert(out.includes('investigation') || out.includes('No investigations'), 'should produce output');
 });
 
-await test('cli: investigate with missing known fails', async () => {
+await test('cli: investigate requires target', async () => {
     const { execSync } = await import('child_process');
     try {
-        execSync('node cli/index.js investigate -n test', { cwd: join(__dirname, '..'), encoding: 'utf-8', stdio: 'pipe' });
+        execSync('node cli/index.js investigate', { cwd: join(__dirname, '..'), encoding: 'utf-8', stdio: 'pipe' });
         throw new Error('should have failed');
     } catch (e) {
-        assert(e.status !== 0 || e.stderr?.includes('known'), 'should exit non-zero');
+        assert(e.status !== 0 || e.stderr?.includes('required'), 'should exit non-zero');
     }
+});
+
+await test('cli: auto-detect type from target', async () => {
+    const { execSync } = await import('child_process');
+    const out = execSync(`node -e "
+        function detectType(v) {
+            if (/^[\\\\w.+-]+@[\\\\w-]+\\\\.[\\\\w.-]+$/.test(v)) return 'email';
+            if (/^\\\\d{1,3}\\\\.\\\\d{1,3}\\\\.\\\\d{1,3}\\\\.\\\\d{1,3}$/.test(v)) return 'ip';
+            if (/^[a-z0-9]([a-z0-9-]*\\\\.)+[a-z]{2,}$/i.test(v)) return 'domain';
+            return 'username';
+        }
+        const r = [detectType('a@b.com'), detectType('1.2.3.4'), detectType('x.com'), detectType('user')];
+        console.log(r.join(','));
+    "`, { encoding: 'utf-8', timeout: 5000 });
+    assertEq(out.trim(), 'email,ip,domain,username', 'auto-detect types');
 });
 
 // ── SUMMARY ──────────────────────────────────────────────
