@@ -80,6 +80,7 @@ export class ConnectorRegistry {
             type: conn.config.type,
             accepts: conn.config.accepts,
             outputs: conn.config.outputs,
+            native: !!conn.config.native,
             healthy: this.health.get(key)?.ok ?? null
         }));
     }

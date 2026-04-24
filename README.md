@@ -44,11 +44,16 @@ node cyclops.js serve --port 3100
 
 | Command | Description |
 |---------|-------------|
-| `investigate` | Launch a new investigation |
+| `investigate -n <name> -k <type:value>` | Launch investigation with live progress |
 | `list` | List all investigations |
-| `status <id>` | Show investigation status |
-| `report <id>` | Generate report |
-| `connectors` | List connectors |
+| `status <id>` | Full investigation status with bars |
+| `entities <id>` | Browse/search/filter entities |
+| `graph <id>` | Print entity link tree |
+| `report <id>` | Generate report (json, html, md) |
+| `export <id>` | Export data (json, csv, ndjson) |
+| `connectors` | List connectors (`--health`, `--native`) |
+| `workflows` | Show available workflows |
+| `purge <id>` | Delete investigation (`--all`) |
 | `serve` | Start dashboard server |
 
 ## Connectors (25)
