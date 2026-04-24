@@ -115,6 +115,12 @@ const server = createServer(async (req, res) => {
                 return json(res, engine.state.getEntities(entMatch[1], type));
             }
 
+            // GET /api/investigation/:id/knowns
+            const knownsMatch = path.match(/^\/api\/investigation\/([^/]+)\/knowns$/);
+            if (knownsMatch && method === 'GET') {
+                return json(res, engine.state.getKnowns(knownsMatch[1]));
+            }
+
             // GET /api/investigation/:id/graph
             const graphMatch = path.match(/^\/api\/investigation\/([^/]+)\/graph$/);
             if (graphMatch && method === 'GET') {

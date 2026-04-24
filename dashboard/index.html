@@ -105,6 +105,8 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text-0); margin: 16px 0 8px
         <div class="nav-section">Operations</div>
         <a class="nav-item active" data-page="investigate">New Investigation</a>
         <a class="nav-item" data-page="investigations">Investigations</a>
+        <div class="nav-section">Analysis</div>
+        <a class="nav-item" href="/graph.html">Entity Graph</a>
         <div class="nav-section">System</div>
         <a class="nav-item" data-page="connectors">Connectors</a>
         <a class="nav-item" data-page="events">Event Log</a>
@@ -230,7 +232,11 @@ async function loadInvestigations() {
             <td>${inv.workflow}</td>
             <td><span class="badge badge-${inv.status === 'completed' ? 'green' : inv.status === 'running' ? 'amber' : inv.status === 'failed' ? 'red' : 'blue'}">${inv.status}</span></td>
             <td>${inv.created_at}</td>
-            <td><a href="/api/investigation/${inv.id}/report?format=html" target="_blank" class="btn btn-ghost" style="padding:4px 8px;font-size:10px">Report</a></td>
+            <td>
+                <a href="/investigation.html?id=${inv.id}" class="btn btn-ghost" style="padding:4px 8px;font-size:10px">Detail</a>
+                <a href="/graph.html?id=${inv.id}" class="btn btn-ghost" style="padding:4px 8px;font-size:10px">Graph</a>
+                <a href="/api/investigation/${inv.id}/report?format=html" target="_blank" class="btn btn-ghost" style="padding:4px 8px;font-size:10px">Report</a>
+            </td>
         </tr>
     `).join('');
 }

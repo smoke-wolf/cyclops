@@ -314,6 +314,42 @@
       "priority": 2,
       "parallel": true,
       "enabled": true
+    },
+    "wayback": {
+      "name": "Wayback",
+      "type": "historical_archive",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain"],
+      "outputs": ["url", "subdomain", "email"],
+      "timeout": 60000,
+      "priority": 2,
+      "parallel": true,
+      "enabled": true
+    },
+    "ip_api": {
+      "name": "IP-API",
+      "type": "ip_geolocation",
+      "binary": null,
+      "native": true,
+      "accepts": ["ip"],
+      "outputs": ["ip", "organization", "domain"],
+      "timeout": 15000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "emailrep": {
+      "name": "EmailRep",
+      "type": "email_reputation",
+      "binary": null,
+      "native": true,
+      "accepts": ["email"],
+      "outputs": ["email", "account", "breach"],
+      "timeout": 15000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
     }
   },
   "execution": {

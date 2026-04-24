@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYCLOPS — Entity Graph</title>
+<style>
+:root {
+    --bg-0: #08090d; --bg-1: #0f1117; --bg-2: #181a22;
+    --text-0: #f0f3f8; --text-1: #a0a8b8; --text-2: #6b7280;
+    --accent: #e74c3c; --green: #22c55e; --amber: #f59e0b;
+    --blue: #3b82f6; --purple: #a78bfa; --cyan: #06b6d4; --pink: #ec4899;
+    --border: rgba(255,255,255,0.06);
+    --mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-0); color: var(--text-0); font-family: var(--mono); overflow: hidden; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; height: 48px; background: var(--bg-1); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+.toolbar .logo { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 0.1em; }
+.toolbar select, .toolbar input { background: var(--bg-2); border: 1px solid var(--border); color: var(--text-0); padding: 4px 8px; border-radius: 4px; font-family: var(--mono); font-size: 12px; }
+.toolbar .btn { padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-2); color: var(--text-1); cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
+.toolbar .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.toolbar .stats { margin-left: auto; color: var(--text-2); font-size: 11px; }
+canvas { display: block; width: 100vw; height: calc(100vh - 48px); margin-top: 48px; }
+.tooltip { position: fixed; background: var(--bg-1); border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-size: 11px; max-width: 350px; pointer-events: none; z-index: 200; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.tooltip .type { color: var(--accent); text-transform: uppercase; font-size: 10px; letter-spacing: 0.08em; margin-bottom: 4px; }
+.tooltip .label { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.tooltip .field { color: var(--text-2); }
+.tooltip .field span { color: var(--text-1); }
+.legend { position: fixed; bottom: 16px; left: 16px; background: var(--bg-1); border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-size: 10px; z-index: 100; }
+.legend-item { display: flex; align-items: center; gap: 6px; margin: 3px 0; color: var(--text-1); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+    <span class="logo">CYCLOPS</span>
+    <select id="investigation-select"><option value="">Select investigation...</option></select>
+    <button class="btn" onclick="loadGraph()">Load</button>
+    <label style="color:var(--text-2);font-size:11px"><input type="checkbox" id="show-labels" checked> Labels</label>
+    <label style="color:var(--text-2);font-size:11px"><input type="checkbox" id="physics" checked> Physics</label>
+    <input type="range" id="repulsion" min="10" max="500" value="120" style="width:100px" title="Repulsion">
+    <div class="stats" id="stats"></div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="tooltip" id="tooltip">
+    <div class="type" id="tt-type"></div>
+    <div class="label" id="tt-label"></div>
+    <div id="tt-fields"></div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+const TYPE_COLORS = {
+    person: '#e74c3c', account: '#3b82f6', email: '#22c55e', domain: '#f59e0b',
+    subdomain: '#d97706', ip: '#06b6d4', port: '#6366f1', certificate: '#8b5cf6',
+    breach: '#ef4444', credential: '#dc2626', phone: '#ec4899', url: '#64748b',
+    dns_record: '#475569', repository: '#a78bfa', organization: '#14b8a6',
+    technology: '#f97316', vulnerability: '#b91c1c'
+};
+
+const TYPE_RADIUS = {
+    person: 16, account: 12, email: 10, domain: 14, subdomain: 6, ip: 8,
+    port: 5, certificate: 7, breach: 10, credential: 8, phone: 9, url: 5,
+    dns_record: 4, repository: 8, organization: 12, technology: 7, vulnerability: 9
+};
+
+let nodes = [], edges = [], graph = null;
+let hoveredNode = null, dragNode = null, dragOffset = { x: 0, y: 0 };
+let camera = { x: 0, y: 0, zoom: 1 };
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('tooltip');
+
+function resize() {
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = (window.innerHeight - 48) * devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = (window.innerHeight - 48) + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+}
+resize();
+window.addEventListener('resize', resize);
+
+async function loadInvestigations() {
+    const res = await fetch('/api/investigations');
+    const data = await res.json();
+    const sel = document.getElementById('investigation-select');
+    sel.innerHTML = '<option value="">Select investigation...</option>';
+    for (const inv of data) {
+        sel.innerHTML += `<option value="${inv.id}">${inv.name} (${inv.status})</option>`;
+    }
+}
+
+async function loadGraph() {
+    const id = document.getElementById('investigation-select').value;
+    if (!id) return;
+    const res = await fetch(`/api/investigation/${id}/graph`);
+    graph = await res.json();
+
+    nodes = graph.nodes.map((n, i) => ({
+        ...n, x: (Math.random() - 0.5) * 800, y: (Math.random() - 0.5) * 600,
+        vx: 0, vy: 0, radius: TYPE_RADIUS[n.type] || 8, color: TYPE_COLORS[n.type] || '#666'
+    }));
+
+    edges = graph.edges.map(e => ({
+        ...e,
+        source: nodes.find(n => n.id === e.from),
+        target: nodes.find(n => n.id === e.to)
+    })).filter(e => e.source && e.target);
+
+    document.getElementById('stats').textContent = `${nodes.length} nodes, ${edges.length} edges`;
+    buildLegend();
+    camera = { x: 0, y: 0, zoom: 1 };
+}
+
+function buildLegend() {
+    const types = {};
+    for (const n of nodes) types[n.type] = (types[n.type] || 0) + 1;
+    const legend = document.getElementById('legend');
+    legend.innerHTML = Object.entries(types).sort((a, b) => b[1] - a[1]).map(([type, count]) =>
+        `<div class="legend-item"><div class="legend-dot" style="background:${TYPE_COLORS[type] || '#666'}"></div>${type} (${count})</div>`
+    ).join('');
+}
+
+function simulate() {
+    if (!document.getElementById('physics').checked) return;
+    const repulsion = parseInt(document.getElementById('repulsion').value);
+
+    for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+            let dx = nodes[j].x - nodes[i].x;
+            let dy = nodes[j].y - nodes[i].y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            let force = repulsion / (dist * dist);
+            let fx = (dx / dist) * force;
+            let fy = (dy / dist) * force;
+            nodes[i].vx -= fx; nodes[i].vy -= fy;
+            nodes[j].vx += fx; nodes[j].vy += fy;
+        }
+    }
+
+    for (const e of edges) {
+        let dx = e.target.x - e.source.x;
+        let dy = e.target.y - e.source.y;
+        let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        let force = (dist - 80) * 0.01;
+        let fx = (dx / dist) * force;
+        let fy = (dy / dist) * force;
+        e.source.vx += fx; e.source.vy += fy;
+        e.target.vx -= fx; e.target.vy -= fy;
+    }
+
+    for (const n of nodes) {
+        if (n === dragNode) continue;
+        n.vx *= 0.85; n.vy *= 0.85;
+        n.x += n.vx; n.y += n.vy;
+    }
+}
+
+function draw() {
+    const w = canvas.width / devicePixelRatio;
+    const h = canvas.height / devicePixelRatio;
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(w / 2 + camera.x, h / 2 + camera.y);
+    ctx.scale(camera.zoom, camera.zoom);
+
+    for (const e of edges) {
+        ctx.beginPath();
+        ctx.moveTo(e.source.x, e.source.y);
+        ctx.lineTo(e.target.x, e.target.y);
+        ctx.strokeStyle = hoveredNode && (e.source === hoveredNode || e.target === hoveredNode)
+            ? 'rgba(231,76,60,0.6)' : 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = hoveredNode && (e.source === hoveredNode || e.target === hoveredNode) ? 1.5 : 0.5;
+        ctx.stroke();
+    }
+
+    const showLabels = document.getElementById('show-labels').checked;
+    for (const n of nodes) {
+        const isHovered = n === hoveredNode;
+        const isLinked = hoveredNode && edges.some(e =>
+            (e.source === hoveredNode && e.target === n) || (e.target === hoveredNode && e.source === n));
+        const dim = hoveredNode && !isHovered && !isLinked;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fillStyle = dim ? n.color + '33' : n.color;
+        ctx.fill();
+
+        if (isHovered) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.radius + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = n.color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        if (showLabels && (camera.zoom > 0.5 || isHovered || isLinked) && !dim) {
+            ctx.font = `${Math.max(8, 10 / camera.zoom)}px 'SF Mono', monospace`;
+            ctx.fillStyle = isHovered ? '#fff' : 'rgba(240,243,248,0.5)';
+            ctx.textAlign = 'center';
+            ctx.fillText(n.label?.slice(0, 30) || '', n.x, n.y + n.radius + 12);
+        }
+    }
+
+    ctx.restore();
+    simulate();
+    requestAnimationFrame(draw);
+}
+
+function screenToWorld(sx, sy) {
+    const w = canvas.width / devicePixelRatio;
+    const h = canvas.height / devicePixelRatio;
+    return {
+        x: (sx - w / 2 - camera.x) / camera.zoom,
+        y: (sy - h / 2 - camera.y) / camera.zoom
+    };
+}
+
+function findNode(sx, sy) {
+    const { x, y } = screenToWorld(sx, sy);
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i];
+        const dx = n.x - x, dy = n.y - y;
+        if (dx * dx + dy * dy < (n.radius + 4) * (n.radius + 4)) return n;
+    }
+    return null;
+}
+
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const sx = e.clientX - rect.left;
+    const sy = e.clientY - rect.top;
+
+    if (dragNode) {
+        const { x, y } = screenToWorld(sx, sy);
+        dragNode.x = x + dragOffset.x;
+        dragNode.y = y + dragOffset.y;
+        dragNode.vx = 0; dragNode.vy = 0;
+        return;
+    }
+
+    const node = findNode(sx, sy);
+    hoveredNode = node;
+    canvas.style.cursor = node ? 'pointer' : 'grab';
+
+    if (node) {
+        const tt = document.getElementById('tooltip');
+        document.getElementById('tt-type').textContent = node.type;
+        document.getElementById('tt-label').textContent = node.label;
+        let fields = '';
+        for (const [k, v] of Object.entries(node.data || {})) {
+            if (v !== null && v !== undefined && typeof v !== 'object') {
+                fields += `<div class="field">${k}: <span>${String(v).slice(0, 80)}</span></div>`;
+            }
+        }
+        fields += `<div class="field">confidence: <span>${(node.confidence * 100).toFixed(0)}%</span></div>`;
+        fields += `<div class="field">sources: <span>${node.sources}</span></div>`;
+        document.getElementById('tt-fields').innerHTML = fields;
+        tt.style.display = 'block';
+        tt.style.left = Math.min(e.clientX + 16, window.innerWidth - 370) + 'px';
+        tt.style.top = Math.min(e.clientY + 16, window.innerHeight - 200) + 'px';
+    } else {
+        tooltip.style.display = 'none';
+    }
+});
+
+canvas.addEventListener('mousedown', e => {
+    const rect = canvas.getBoundingClientRect();
+    const node = findNode(e.clientX - rect.left, e.clientY - rect.top);
+    if (node) {
+        dragNode = node;
+        const { x, y } = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+        dragOffset = { x: node.x - x, y: node.y - y };
+        canvas.style.cursor = 'grabbing';
+    } else {
+        dragNode = null;
+        canvas._panStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
+    }
+});
+
+canvas.addEventListener('mousemove', e => {
+    if (!dragNode && canvas._panStart) {
+        camera.x = e.clientX - canvas._panStart.x;
+        camera.y = e.clientY - canvas._panStart.y;
+    }
+});
+
+window.addEventListener('mouseup', () => {
+    dragNode = null;
+    canvas._panStart = null;
+    canvas.style.cursor = 'default';
+});
+
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY > 0 ? 0.9 : 1.1;
+    camera.zoom = Math.max(0.1, Math.min(10, camera.zoom * factor));
+});
+
+loadInvestigations();
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

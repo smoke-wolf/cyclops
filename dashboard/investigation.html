@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYCLOPS — Investigation</title>
+<style>
+:root {
+    --bg-0: #08090d; --bg-1: #0f1117; --bg-2: #181a22; --bg-3: #1e2130;
+    --text-0: #f0f3f8; --text-1: #a0a8b8; --text-2: #6b7280;
+    --accent: #e74c3c; --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+    --blue: #3b82f6; --purple: #a78bfa; --cyan: #06b6d4;
+    --border: rgba(255,255,255,0.06); --radius: 6px;
+    --mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-0); color: var(--text-0); font-family: var(--mono); font-size: 13px; line-height: 1.6; padding: 24px; max-width: 1400px; margin: 0 auto; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.logo { font-size: 15px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: 16px; font-weight: 500; }
+h2 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.meta { color: var(--text-2); font-size: 11px; margin-bottom: 24px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+.badge-green { background: rgba(34,197,94,0.12); color: var(--green); }
+.badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge-red { background: rgba(239,68,68,0.12); color: var(--red); }
+.badge-blue { background: rgba(59,130,246,0.12); color: var(--blue); }
+.badge-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-label { font-size: 10px; text-transform: uppercase; color: var(--text-2); letter-spacing: 0.1em; margin-top: 4px; }
+.tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 16px; color: var(--text-2); cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid transparent; }
+.tab:hover { color: var(--text-0); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+th { text-align: left; padding: 6px 10px; background: var(--bg-2); color: var(--text-2); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); font-weight: 500; }
+td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-1); font-size: 11px; }
+tr:hover td { background: var(--bg-1); }
+.entity-group { margin-bottom: 16px; }
+.entity-group-header { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 6px 0; }
+.entity-group-header .count { color: var(--text-2); font-size: 11px; }
+.entity-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin: 4px 0; font-size: 11px; }
+.entity-card .field { color: var(--text-2); }
+.entity-card .field span { color: var(--text-1); }
+.confidence-bar { display: inline-block; width: 50px; height: 4px; background: var(--bg-3); border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.confidence-fill { height: 100%; border-radius: 2px; }
+.phase-timeline { display: flex; flex-direction: column; gap: 8px; }
+.phase-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); }
+.phase-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.phase-name { font-weight: 500; flex: 1; }
+.phase-meta { color: var(--text-2); font-size: 11px; }
+.actions { display: flex; gap: 8px; margin-bottom: 24px; }
+.btn { padding: 6px 16px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-2); color: var(--text-1); cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
+.btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="header">
+    <a href="/" class="logo">CYCLOPS</a>
+    <span style="color:var(--text-2)">›</span>
+    <h1 id="inv-name">Investigation</h1>
+    <span class="badge" id="inv-status"></span>
+</div>
+<div class="meta" id="inv-meta"></div>
+
+<div class="stat-grid" id="stats-grid"></div>
+
+<div class="actions">
+    <a class="btn" id="btn-graph" href="#">Entity Graph</a>
+    <a class="btn" id="btn-report-html" href="#">HTML Report</a>
+    <a class="btn" id="btn-report-json" href="#">JSON Report</a>
+</div>
+
+<div class="tabs">
+    <div class="tab active" data-tab="entities">Entities</div>
+    <div class="tab" data-tab="phases">Phases</div>
+    <div class="tab" data-tab="connectors">Connectors</div>
+    <div class="tab" data-tab="knowns">Knowns</div>
+</div>
+
+<div class="tab-content active" id="tab-entities"></div>
+<div class="tab-content" id="tab-phases"></div>
+<div class="tab-content" id="tab-connectors"></div>
+<div class="tab-content" id="tab-knowns"></div>
+
+<script>
+const id = new URLSearchParams(window.location.search).get('id');
+if (!id) { document.body.innerHTML = '<p>No investigation ID. <a href="/">Back</a></p>'; }
+
+document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+    });
+});
+
+async function load() {
+    const res = await fetch(`/api/investigation/${id}`);
+    const data = await res.json();
+    const inv = data.investigation;
+
+    document.getElementById('inv-name').textContent = inv.name;
+    const statusClass = inv.status === 'completed' ? 'green' : inv.status === 'running' ? 'amber' : inv.status === 'failed' ? 'red' : 'blue';
+    document.getElementById('inv-status').className = `badge badge-${statusClass}`;
+    document.getElementById('inv-status').textContent = inv.status;
+    document.getElementById('inv-meta').textContent = `${inv.workflow} — ${inv.created_at} — ID: ${inv.id}`;
+
+    document.getElementById('btn-graph').href = `/graph.html?id=${id}`;
+    document.getElementById('btn-report-html').href = `/api/investigation/${id}/report?format=html`;
+    document.getElementById('btn-report-json').href = `/api/investigation/${id}/report?format=json`;
+
+    const entityTotal = data.stats.entities.reduce((s, e) => s + e.count, 0);
+    document.getElementById('stats-grid').innerHTML = `
+        <div class="stat"><div class="stat-value">${entityTotal}</div><div class="stat-label">Entities</div></div>
+        <div class="stat"><div class="stat-value">${data.stats.links}</div><div class="stat-label">Links</div></div>
+        <div class="stat"><div class="stat-value">${data.stats.entities.length}</div><div class="stat-label">Types</div></div>
+        <div class="stat"><div class="stat-value">${data.stats.phases.length}</div><div class="stat-label">Phases</div></div>
+    `;
+
+    const entRes = await fetch(`/api/investigation/${id}/entities`);
+    const entities = await entRes.json();
+
+    const grouped = {};
+    for (const e of entities) {
+        if (!grouped[e.type]) grouped[e.type] = [];
+        grouped[e.type].push(e);
+    }
+
+    const COLORS = {
+        person: '#e74c3c', account: '#3b82f6', email: '#22c55e', domain: '#f59e0b',
+        subdomain: '#d97706', ip: '#06b6d4', repository: '#a78bfa', breach: '#ef4444',
+        phone: '#ec4899', url: '#64748b', dns_record: '#475569', technology: '#f97316',
+        organization: '#14b8a6', certificate: '#8b5cf6', port: '#6366f1'
+    };
+
+    let entHtml = '';
+    for (const [type, items] of Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)) {
+        const color = COLORS[type] || '#666';
+        entHtml += `<div class="entity-group">`;
+        entHtml += `<div class="entity-group-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">`;
+        entHtml += `<span class="badge" style="background:${color}22;color:${color}">${type}</span>`;
+        entHtml += `<span class="count">${items.length}</span></div>`;
+        entHtml += `<div style="display:${items.length <= 20 ? 'block' : 'none'}">`;
+        for (const e of items.slice(0, 100)) {
+            const conf = e.confidence * 100;
+            const confColor = conf >= 80 ? 'var(--green)' : conf >= 50 ? 'var(--amber)' : 'var(--red)';
+            entHtml += `<div class="entity-card">`;
+            entHtml += `<span class="confidence-bar"><span class="confidence-fill" style="width:${conf}%;background:${confColor}"></span></span>`;
+            entHtml += `<strong>${conf.toFixed(0)}%</strong> `;
+            for (const [k, v] of Object.entries(e.data || {})) {
+                if (v !== null && v !== undefined && typeof v !== 'object') {
+                    entHtml += `<span class="field">${k}: <span>${String(v).slice(0, 100)}</span></span> `;
+                }
+            }
+            if (e.source_count > 1) entHtml += `<span class="badge badge-amber">${e.source_count} sources</span>`;
+            entHtml += `</div>`;
+        }
+        if (items.length > 100) entHtml += `<div style="color:var(--text-2);padding:8px">... and ${items.length - 100} more</div>`;
+        entHtml += `</div></div>`;
+    }
+    document.getElementById('tab-entities').innerHTML = entHtml;
+
+    let phaseHtml = '<div class="phase-timeline">';
+    for (const p of data.stats.phases) {
+        const color = p.status === 'completed' ? 'var(--green)' : p.status === 'running' ? 'var(--amber)' : 'var(--red)';
+        const delta = (p.entities_after || 0) - (p.entities_before || 0);
+        phaseHtml += `<div class="phase-item">`;
+        phaseHtml += `<div class="phase-dot" style="background:${color}"></div>`;
+        phaseHtml += `<div class="phase-name">${p.phase_id}</div>`;
+        phaseHtml += `<div class="phase-meta">${p.status} | +${delta} entities</div>`;
+        phaseHtml += `</div>`;
+    }
+    phaseHtml += '</div>';
+    document.getElementById('tab-phases').innerHTML = phaseHtml;
+
+    const connGrouped = {};
+    for (const c of data.stats.connectors) {
+        if (!connGrouped[c.connector]) connGrouped[c.connector] = {};
+        connGrouped[c.connector][c.status] = c.count;
+    }
+    let connHtml = '<table><thead><tr><th>Connector</th><th>Completed</th><th>Failed</th><th>Timeout</th></tr></thead><tbody>';
+    for (const [name, statuses] of Object.entries(connGrouped)) {
+        connHtml += `<tr><td>${name}</td>`;
+        connHtml += `<td>${statuses.completed || 0}</td>`;
+        connHtml += `<td>${statuses.failed || 0}</td>`;
+        connHtml += `<td>${statuses.timeout || 0}</td></tr>`;
+    }
+    connHtml += '</tbody></table>';
+    document.getElementById('tab-connectors').innerHTML = connHtml;
+
+    const knownsRes = await fetch(`/api/investigation/${id}/entities?type=`);
+    document.getElementById('tab-knowns').innerHTML = `
+        <table><thead><tr><th>Type</th><th>Count</th></tr></thead><tbody>
+        ${data.stats.entities.map(e => `<tr><td><span class="badge" style="background:${COLORS[e.type] || '#666'}22;color:${COLORS[e.type] || '#666'}">${e.type}</span></td><td>${e.count}</td></tr>`).join('')}
+        </tbody></table>`;
+}
+
+load();
+</script>
+</body>
+</html>

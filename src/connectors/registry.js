@@ -20,6 +20,9 @@ import { WhoisNativeConnector } from './whois_native.js';
 import { CrtShConnector } from './crt_sh.js';
 import { HaveIBeenPwnedConnector } from './haveibeenpwned.js';
 import { WebScraperConnector } from './web_scraper.js';
+import { WaybackConnector } from './wayback.js';
+import { IpApiConnector } from './ip_api.js';
+import { EmailRepConnector } from './emailrep.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, '..', '..', 'config', 'connectors.json');
@@ -42,7 +45,10 @@ const CONNECTOR_MAP = {
     whois_native: WhoisNativeConnector,
     crt_sh: CrtShConnector,
     haveibeenpwned: HaveIBeenPwnedConnector,
-    web_scraper: WebScraperConnector
+    web_scraper: WebScraperConnector,
+    wayback: WaybackConnector,
+    ip_api: IpApiConnector,
+    emailrep: EmailRepConnector
 };
 
 export class ConnectorRegistry {
