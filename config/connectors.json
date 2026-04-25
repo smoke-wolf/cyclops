@@ -389,6 +389,57 @@
       "parallel": true,
       "api_key_env": "SECURITYTRAILS_API_KEY",
       "enabled": true
+    },
+    "shodan_internetdb": {
+      "name": "Shodan InternetDB",
+      "type": "ip_recon",
+      "binary": null,
+      "native": true,
+      "accepts": ["ip"],
+      "outputs": ["port", "domain", "ip"],
+      "timeout": 10000,
+      "priority": 1,
+      "parallel": true,
+      "enabled": true
+    },
+    "otx": {
+      "name": "AlienVault OTX",
+      "type": "threat_intelligence",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain", "ip", "url"],
+      "outputs": ["domain", "ip", "url"],
+      "timeout": 30000,
+      "priority": 2,
+      "parallel": true,
+      "api_key_env": "OTX_API_KEY",
+      "enabled": true
+    },
+    "abuseipdb": {
+      "name": "AbuseIPDB",
+      "type": "ip_reputation",
+      "binary": null,
+      "native": true,
+      "accepts": ["ip"],
+      "outputs": ["ip", "domain"],
+      "timeout": 10000,
+      "priority": 1,
+      "parallel": true,
+      "api_key_env": "ABUSEIPDB_API_KEY",
+      "enabled": true
+    },
+    "urlscan": {
+      "name": "URLScan",
+      "type": "url_intelligence",
+      "binary": null,
+      "native": true,
+      "accepts": ["domain", "url"],
+      "outputs": ["ip", "domain", "certificate", "technology"],
+      "timeout": 30000,
+      "priority": 2,
+      "parallel": true,
+      "api_key_env": "URLSCAN_API_KEY",
+      "enabled": true
     }
   },
   "execution": {
@@ -404,6 +455,9 @@
     "censys_secret": { "env": "CENSYS_API_SECRET" },
     "hunter": { "env": "HUNTER_API_KEY" },
     "virustotal": { "env": "VIRUSTOTAL_API_KEY" },
-    "securitytrails": { "env": "SECURITYTRAILS_API_KEY" }
+    "securitytrails": { "env": "SECURITYTRAILS_API_KEY" },
+    "otx": { "env": "OTX_API_KEY" },
+    "abuseipdb": { "env": "ABUSEIPDB_API_KEY" },
+    "urlscan": { "env": "URLSCAN_API_KEY" }
   }
 }

@@ -32,7 +32,7 @@
           "id": "infrastructure_map",
           "name": "Infrastructure Mapping",
           "description": "Map any associated domains, IPs, and services",
-          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon", "dns_native", "whois_native", "crt_sh", "web_scraper", "wayback", "ip_api", "virustotal", "hunter", "securitytrails"],
+          "connectors": ["theharvester", "subfinder", "shodan", "nmap", "dnsrecon", "dns_native", "whois_native", "crt_sh", "web_scraper", "wayback", "ip_api", "virustotal", "hunter", "securitytrails", "shodan_internetdb", "otx", "abuseipdb", "urlscan"],
           "input_types": ["domain", "ip"],
           "depends_on": ["seed_expansion"],
           "timeout": 600000,
@@ -81,7 +81,7 @@
         {
           "id": "subdomain_enum",
           "name": "Subdomain Enumeration",
-          "connectors": ["amass", "subfinder", "dnsrecon", "dns_native", "crt_sh", "whois_native", "virustotal", "securitytrails"],
+          "connectors": ["amass", "subfinder", "dnsrecon", "dns_native", "crt_sh", "whois_native", "virustotal", "securitytrails", "otx", "urlscan"],
           "input_types": ["domain"],
           "depends_on": [],
           "timeout": 600000
@@ -89,7 +89,7 @@
         {
           "id": "service_scan",
           "name": "Service Discovery",
-          "connectors": ["shodan", "censys", "nmap", "web_scraper", "virustotal"],
+          "connectors": ["shodan", "censys", "nmap", "web_scraper", "virustotal", "shodan_internetdb", "abuseipdb", "urlscan"],
           "input_types": ["ip", "domain", "subdomain"],
           "depends_on": ["subdomain_enum"],
           "timeout": 600000

@@ -1,9 +1,9 @@
 <p align="center">
   <h1 align="center">CYCLOPS</h1>
-  <p align="center">Unified OSINT targeting pipeline. 28 connectors. Entity graph. Auto-correlation. One command.</p>
+  <p align="center">Unified OSINT targeting pipeline. 32 connectors. Entity graph. Auto-correlation. One command.</p>
   <p align="center">
     <a href="https://github.com/smoke-wolf/cyclops/actions"><img src="https://github.com/smoke-wolf/cyclops/actions/workflows/test.yml/badge.svg" alt="tests"></a>
-    <img src="https://img.shields.io/badge/connectors-28-blue" alt="28 connectors">
+    <img src="https://img.shields.io/badge/connectors-32-blue" alt="32 connectors">
     <img src="https://img.shields.io/badge/node-%3E%3D20-green" alt="node >= 20">
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license"></a>
   </p>
@@ -73,7 +73,7 @@ CYCLOPS auto-detects the input type (username, email, domain, IP, URL, phone), p
 ## Architecture
 
 ```
-Target ──▶ Auto-Detect ──▶ Engine (DAG) ──▶ Connectors (28) ──▶ OSINT Sources
+Target ──▶ Auto-Detect ──▶ Engine (DAG) ──▶ Connectors (32) ──▶ OSINT Sources
                                │                    │
                          Correlator            Telemetry
                          (fuzzy match,         (SSE, WS,
@@ -89,7 +89,7 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 
 ![connectors](assets/connectors.svg)
 
-### Native (12) — zero dependencies
+### Native (16) — zero dependencies
 
 | Connector | Accepts | Outputs |
 |-----------|---------|---------|
@@ -105,6 +105,10 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 | VirusTotal | domain, ip, url | threat intel, subdomains, DNS, resolutions |
 | Hunter | domain, email | employee emails, verification, org info |
 | SecurityTrails | domain, ip | subdomains, DNS history, WHOIS, neighboring IPs |
+| Shodan InternetDB | ip | open ports, vulns, hostnames, CPEs (no API key) |
+| AlienVault OTX | domain, ip, url | threat pulses, passive DNS, malware samples |
+| AbuseIPDB | ip | abuse score, ISP, proxy/tor detection, report count |
+| URLScan | domain, url | IPs, certificates, technologies, resource domains |
 
 ### Binary (16) — auto-skipped if not installed
 
@@ -198,6 +202,9 @@ export HIBP_API_KEY=...
 export EMAILREP_API_KEY=...
 export VIRUSTOTAL_API_KEY=...   # domain/IP/URL threat intel
 export SECURITYTRAILS_API_KEY=... # DNS history, subdomains, WHOIS
+export OTX_API_KEY=...         # AlienVault OTX threat intel (optional, works without)
+export ABUSEIPDB_API_KEY=...   # IP abuse/reputation scoring
+export URLSCAN_API_KEY=...     # URL/domain scanning (optional, works without)
 export IP_API_KEY=...          # enables HTTPS via pro endpoint
 ```
 

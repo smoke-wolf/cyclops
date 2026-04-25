@@ -26,6 +26,10 @@ import { EmailRepConnector } from './emailrep.js';
 import { VirusTotalConnector } from './virustotal.js';
 import { HunterConnector } from './hunter.js';
 import { SecurityTrailsConnector } from './securitytrails.js';
+import { ShodanInternetDBConnector } from './shodan_internetdb.js';
+import { OTXConnector } from './otx.js';
+import { AbuseIPDBConnector } from './abuseipdb.js';
+import { URLScanConnector } from './urlscan.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, '..', '..', 'config', 'connectors.json');
@@ -54,7 +58,11 @@ const CONNECTOR_MAP = {
     emailrep: EmailRepConnector,
     virustotal: VirusTotalConnector,
     hunter: HunterConnector,
-    securitytrails: SecurityTrailsConnector
+    securitytrails: SecurityTrailsConnector,
+    shodan_internetdb: ShodanInternetDBConnector,
+    otx: OTXConnector,
+    abuseipdb: AbuseIPDBConnector,
+    urlscan: URLScanConnector
 };
 
 export class ConnectorRegistry {
