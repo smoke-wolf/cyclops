@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cyclops-osint"
+version = "2.0.0"
+description = "Unified OSINT targeting pipeline — 32 connectors, entity graph correlation, auto-reporting."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "smoke-wolf" }]
+keywords = ["osint", "intelligence", "reconnaissance", "security", "cli", "recon"]
+classifiers = [
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = [
+    "aiohttp>=3.9",
+    "click>=8.0",
+    "rich>=13.0",
+]
+
+[project.scripts]
+cyclops = "cyclops.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cyclops"]
+
+[project.optional-dependencies]
+full = [
+    "sherlock-project",
+    "holehe",
+    "maigret",
+    "shodan",
+    "censys",
+    "h8mail",
+]

@@ -1,8 +1,0 @@
-node_modules
-.git
-*.db
-*.db-wal
-*.db-shm
-assets
-.github
-test
