@@ -209,10 +209,10 @@ await test('getStats returns correct entity type breakdown', () => {
 console.log(`\n${BOLD}Connector Registry${RST}`);
 cleanup();
 
-await test('registry loads all 25 connectors', () => {
+await test('registry loads all 28 connectors', () => {
     const engine = new Engine(DB_PATH);
     const list = engine.registry.list();
-    assertEq(list.length, 27, `expected 27 connectors, got ${list.length}`);
+    assertEq(list.length, 28, `expected 28 connectors, got ${list.length}`);
     engine.close();
 });
 
@@ -221,7 +221,7 @@ await test('native connectors flagged correctly', () => {
     const engine = new Engine(DB_PATH);
     const list = engine.registry.list();
     const native = list.filter(c => c.native);
-    assertEq(native.length, 11, `expected 11 native, got ${native.length}`);
+    assertEq(native.length, 12, `expected 12 native, got ${native.length}`);
     const nativeNames = native.map(c => c.key).sort();
     assert(nativeNames.includes('github'), 'github should be native');
     assert(nativeNames.includes('dns_native'), 'dns_native should be native');
@@ -602,7 +602,7 @@ await test('cli: connectors command', async () => {
     const out = execSync('node cli/index.js connectors', { cwd: join(__dirname, '..'), encoding: 'utf-8' });
     assert(out.includes('GitHub'), 'should list GitHub');
     assert(out.includes('native'), 'should show native tag');
-    assert(out.includes('27 connector'), 'should show count');
+    assert(out.includes('28 connector'), 'should show count');
 });
 
 await test('cli: list command', async () => {

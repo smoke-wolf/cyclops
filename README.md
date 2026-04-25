@@ -1,9 +1,9 @@
 <p align="center">
   <h1 align="center">CYCLOPS</h1>
-  <p align="center">Unified OSINT targeting pipeline. 27 connectors. Entity graph. Auto-correlation. One command.</p>
+  <p align="center">Unified OSINT targeting pipeline. 28 connectors. Entity graph. Auto-correlation. One command.</p>
   <p align="center">
     <a href="https://github.com/smoke-wolf/cyclops/actions"><img src="https://github.com/smoke-wolf/cyclops/actions/workflows/test.yml/badge.svg" alt="tests"></a>
-    <img src="https://img.shields.io/badge/connectors-25-blue" alt="27 connectors">
+    <img src="https://img.shields.io/badge/connectors-28-blue" alt="28 connectors">
     <img src="https://img.shields.io/badge/node-%3E%3D20-green" alt="node >= 20">
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license"></a>
   </p>
@@ -22,6 +22,10 @@ cd cyclops && npm install
 
 # Or run directly with npx
 npx cyclops-osint smoke-wolf
+
+# Or use Docker
+docker build -t cyclops .
+docker run --rm cyclops smoke-wolf
 ```
 
 ## Usage
@@ -69,7 +73,7 @@ CYCLOPS auto-detects the input type (username, email, domain, IP, URL, phone), p
 ## Architecture
 
 ```
-Target ──▶ Auto-Detect ──▶ Engine (DAG) ──▶ Connectors (25) ──▶ OSINT Sources
+Target ──▶ Auto-Detect ──▶ Engine (DAG) ──▶ Connectors (28) ──▶ OSINT Sources
                                │                    │
                          Correlator            Telemetry
                          (fuzzy match,         (SSE, WS,
@@ -85,7 +89,7 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 
 ![connectors](assets/connectors.svg)
 
-### Native (11) — zero dependencies
+### Native (12) — zero dependencies
 
 | Connector | Accepts | Outputs |
 |-----------|---------|---------|
@@ -100,6 +104,7 @@ Workflow phases resolve as a DAG — connectors within each phase run in paralle
 | EmailRep | email | reputation, profiles, breach flags |
 | VirusTotal | domain, ip, url | threat intel, subdomains, DNS, resolutions |
 | Hunter | domain, email | employee emails, verification, org info |
+| SecurityTrails | domain, ip | subdomains, DNS history, WHOIS, neighboring IPs |
 
 ### Binary (16) — auto-skipped if not installed
 
@@ -192,6 +197,7 @@ export HUNTER_API_KEY=...      # domain email finder
 export HIBP_API_KEY=...
 export EMAILREP_API_KEY=...
 export VIRUSTOTAL_API_KEY=...   # domain/IP/URL threat intel
+export SECURITYTRAILS_API_KEY=... # DNS history, subdomains, WHOIS
 export IP_API_KEY=...          # enables HTTPS via pro endpoint
 ```
 

@@ -25,6 +25,7 @@ import { IpApiConnector } from './ip_api.js';
 import { EmailRepConnector } from './emailrep.js';
 import { VirusTotalConnector } from './virustotal.js';
 import { HunterConnector } from './hunter.js';
+import { SecurityTrailsConnector } from './securitytrails.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, '..', '..', 'config', 'connectors.json');
@@ -52,7 +53,8 @@ const CONNECTOR_MAP = {
     ip_api: IpApiConnector,
     emailrep: EmailRepConnector,
     virustotal: VirusTotalConnector,
-    hunter: HunterConnector
+    hunter: HunterConnector,
+    securitytrails: SecurityTrailsConnector
 };
 
 export class ConnectorRegistry {

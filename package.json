@@ -1,7 +1,7 @@
 {
   "name": "cyclops-osint",
   "version": "1.0.0",
-  "description": "Unified OSINT targeting pipeline — enter a target, get intelligence. 27 connectors, entity graph correlation, auto-reporting.",
+  "description": "Unified OSINT targeting pipeline — enter a target, get intelligence. 28 connectors, entity graph correlation, auto-reporting.",
   "type": "module",
   "main": "cyclops.js",
   "bin": {
@@ -38,6 +38,16 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "files": [
+    "cli/",
+    "src/",
+    "config/",
+    "dashboard/",
+    "db/",
+    "cyclops.js",
+    "LICENSE",
+    "README.md"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
