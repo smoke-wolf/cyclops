@@ -13,7 +13,16 @@ from cyclops.core.engine import Engine
 console = Console()
 
 
-def detect_type(value):
+def detect_type(value: str) -> str:
+    """
+    Auto-detect the target type based on regex heuristics.
+    
+    Args:
+        value: The target identifier to classify.
+        
+    Returns:
+        The detected type (e.g. 'email', 'ip', 'domain', 'url', 'phone', or 'username').
+    """
     if re.match(r'^[\w.+-]+@[\w-]+\.[\w.-]+$', value):
         return "email"
     if re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', value):
