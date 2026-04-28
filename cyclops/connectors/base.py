@@ -29,6 +29,8 @@ class BinaryConnector(BaseConnector):
 
     async def run(self, investigation_id, phase_id, input_type, input_value):
         if not shutil.which(self.binary):
+            run_id = self.state.record_connector_run(investigation_id, phase_id, self.name, input_type, input_value)
+            self.state.complete_connector_run(run_id, "skipped", 0, error=f"{self.binary} not installed")
             return {"status": "skipped", "error": f"{self.binary} not installed"}
 
         run_id = self.state.record_connector_run(investigation_id, phase_id, self.name, input_type, input_value)

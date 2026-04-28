@@ -100,6 +100,20 @@ async def _investigate(target, input_type, workflow, extra_knowns):
     stats = engine.state.get_stats(inv_id)
     entities = engine.state.get_entities(inv_id)
 
+    skipped = [c for c in stats["connectors"] if c["status"] == "skipped"]
+    failed = [c for c in stats["connectors"] if c["status"] == "failed"]
+
+    if skipped or failed:
+        console.print("")
+        if skipped:
+            console.print(f"  [yellow]Skipped {len(skipped)} connectors (missing dependencies):[/yellow]")
+            for c in skipped:
+                console.print(f"    - {c['connector']}: {c['error']}")
+        if failed:
+            console.print(f"  [red]Failed {len(failed)} connectors (API issues/timeouts):[/red]")
+            for c in failed:
+                console.print(f"    - {c['connector']}: {c['error']}")
+
     console.print(f"\n  [bold green]{len(entities)}[/bold green] entities, [bold blue]{stats['links']}[/bold blue] links\n")
 
     by_type = {}
