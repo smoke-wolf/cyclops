@@ -158,6 +158,7 @@ cyclops connectors            # list all 32 connectors
 cyclops workflows             # list available workflows
 cyclops list                  # list past investigations
 cyclops entities <id>         # browse entities from an investigation
+cyclops entities <id> --type domain  # browse specific entities
 cyclops entities <id> --json  # export entities as JSON
 cyclops report <id> --format html  # generate HTML report
 ```
